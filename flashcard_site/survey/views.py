@@ -12,6 +12,7 @@ def index(request):
 @login_required
 def get_cards(request):
     user = request.user
+    #TODO I also want it to trigger if date_next < today 
     reviews_for_today = Card.objects.filter(date_next=datetime.date.today())
     if len(reviews_for_today) > 0:
         review = reviews_for_today[0]
