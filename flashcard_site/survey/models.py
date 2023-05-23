@@ -3,11 +3,6 @@ from django.contrib.auth.models import AbstractUser
 import datetime
 import json
 
-CARD_TYPE_NEW = 0
-CARD_TYPE_LRN = 1
-CARD_TYPE_REV = 2
-CARD_TYPE_RLN = 3
-
 QUEUE_TYPE_NEW = 0
 QUEUE_TYPE_LRN = 1
 QUEUE_TYPE_REV = 2
@@ -17,8 +12,8 @@ NEW_ADDED_EVERY_DAY = 5
 
 class User(AbstractUser):
     new_cards_added_today = models.IntegerField(
-        default=NEW_ADDED_EVERY_DAY
-    )  # think of better way to do this
+        default=0
+    )
 
 
 class Card(models.Model):
@@ -34,7 +29,6 @@ class Card(models.Model):
     repetitions = models.IntegerField(
         default=0
     )  # Initially, the card has not been reviewed, so repetitions is 0
-    card_type = models.IntegerField(default=CARD_TYPE_NEW)  # Initially, the card is new
     queue_type = models.IntegerField(default=QUEUE_TYPE_NEW)
 
     def __str__(self):
