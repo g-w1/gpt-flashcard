@@ -35,3 +35,19 @@ class Card(models.Model):
 
     def __str__(self):
         return f"{self.front}/{self.back}/next: {self.date_next}"
+
+# happens every time a user submits a card
+class ReviewStat(models.Model):
+    belongs = model.ForeignKey(User, on_delete=models.CASCADE)
+    card = model.ForeignKey(Card, on_delete=models.CASCADE)
+    dtime_now = models.DateTimeField()
+    quality = models.IntegerField()
+    interval_before = models.IntegerField()
+    interval_after = models.IntegerField()
+    easiness_before = models.FloatField()
+    easiness_after = models.FloatField()
+    date_scheduled_before = models.DateField()
+    date_scheduled_after = models.DateField()
+
+    def review_missed(self):
+        # TODO implement that if dtime_now > date_scheduled_before then return true because they are on different days
