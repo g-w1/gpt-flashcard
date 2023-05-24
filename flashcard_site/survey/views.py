@@ -4,10 +4,12 @@ from django.db.models import Q
 from django.template import loader
 import datetime
 import json
+import math
 
 from .models import (
     Card,
     QUEUE_TYPE_NEW,
+    QUEUE_TYPE_NEW_FAILED,
     QUEUE_TYPE_LRN,
     QUEUE_TYPE_REV,
     NEW_ADDED_EVERY_DAY,
@@ -17,9 +19,12 @@ from .models import (
 def index(request):
     return HttpResponse("At Survey Index TODO")
 
+
 @login_required
 def review_cards(request):
-    return HttpResponse(loader.get_template("survey/review_cards.html").render({}, request))
+    return HttpResponse(
+        loader.get_template("survey/review_cards.html").render({}, request)
+    )
 
 
 def get_card_from_cards(cards):
@@ -44,12 +49,20 @@ def get_card_from_cards(cards):
 @login_required
 def get_cards(request):
     user = request.user
+    # these are the ones that use time_next_today, because they are sensitive to minutes
     lrn_for_today = Card.objects.filter(
-        date_next__lte=datetime.date.today(), queue_type=QUEUE_TYPE_LRN
+        date_next__lte=datetime.date.today(), time_next_today__lte=datetime.datetime.today(), queue_type=QUEUE_TYPE_LRN
     )
     lrn_for_today_card = get_card_from_cards(lrn_for_today)
     if lrn_for_today_card != None:
         return HttpResponse(lrn_for_today_card, content_type="application/json")
+
+    new_failed_for_today = Card.objects.filter(
+        date_next__lte=datetime.date.today(), time_next_today__lte=datetime.datetime.today(), queue_type=QUEUE_TYPE_NEW_FAILED
+    )
+    new_failed_for_today_card = get_card_from_cards(new_failed_for_today)
+    if new_failed_for_today_card != None:
+        return HttpResponse(new_failed_for_today_card, content_type="application/json")
 
     rev_for_today = Card.objects.filter(
         date_next__lte=datetime.date.today(), queue_type=QUEUE_TYPE_REV
@@ -70,15 +83,22 @@ def get_cards(request):
 
 @login_required
 def submit_card(request):
+    user = request.user
     # get the card
     if not request.POST:
         return HttpResponse("/submit_card needs a POST request")
-    req = json.parse(request.POST["body"])
+    print(request.POST)
+    req = json.loads(request.POST["body"])
     quality = req["quality"]
     id = req["id"]
-    card = Card.objects.filter(id=req["id"], user=request.user)
+    card = Card.objects.filter(
+        id=id, belongs=user, date_next__lte=datetime.date.today()
+    )
     if len(card) != 1:
-        return HttpResponse("you submitted a card that does not exist, or from another user")
+        return HttpResponse(
+            "{'analyzed': false, 'error':'you submitted a card that does not exist, or from another user, or card that is not ready to be displayed yet'}",
+            content_type="application/json",
+        )
     card = card[0]
 
     # QUALITY:
@@ -87,41 +107,66 @@ def submit_card(request):
     # quality = 3: subtract .14
     # quality = 2: subtract .32
     # quality = 1: subtract .54
-
+    minutes_next = None
     if card.queue_type == QUEUE_TYPE_NEW:
         if quality > 3:
             card.queue_type = QUEUE_TYPE_LRN
             card.interval = 0
+            minutes_next = 5
+            card.repetitions = 1
         else:
-            card.queue_type = QUEUE_TYPE_NEW
+            card.queue_type = QUEUE_TYPE_NEW_FAILED
             card.interval = 0
+            minutes_next = 1
+            card.repetitions = 0
         user.new_cards_added_today += 1
+    # the same as previous, but we don't increment the new card max counter
+    elif card.queue_type == QUEUE_TYPE_NEW_FAILED:
+        if quality > 3:
+            card.queue_type = QUEUE_TYPE_LRN
+            card.interval = 0
+            minutes_next = 5
+            card.repetitions = 1
+        else:
+            card.queue_type = QUEUE_TYPE_NEW_FAILED
+            card.interval = 0
+            minutes_next = 1
+            card.repetitions = 0
     elif card.queue_type == QUEUE_TYPE_LRN:
         if quality > 3:
             card.queue_type = QUEUE_TYPE_REV
             card.interval = 1
+            card.repetitions = 1
         else:
             card.queue_type = QUEUE_TYPE_LRN
             card.interval = 0
+            minutes_next = 1
+            card.repitin = 0
     elif card.queue_type == QUEUE_TYPE_REV:
         if quality < 3:
             card.interval = 0  # do it again today
-            card.repititions = 0  # reset the streak
+            minutes_next = 5
+            card.repetitions = 0  # reset the streak
             card.queue_type = QUEUE_TYPE_LRN
         else:
-            if card.repititions == 0:
+            if card.repetitions == 0:
                 card.interval = 1
-            elif card.repititions == 1:
+            elif card.repetitions == 1:
                 card.interval == 3
             else:
-                card.interval = ceil(card.interval * card.easiness)
-            card.repititions += 1
+                card.interval = math.ceil(card.interval * card.easiness)
+            card.repetitions += 1
     else:
-        assert False # we encountered a wrong queue_type
+        assert False  # we encountered a wrong queue_type
     card.easiness += 0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02)
     if card.easiness < 1.3:
         card.easiness = 1.3
-    review_date = datetime.date.today() + datetime.timedelta(interval)
+    review_date = datetime.date.today() + datetime.timedelta(card.interval)
+    card.date_next = review_date
+    if minutes_next != None:
+        card.time_next_today = datetime.datetime.today() + datetime.timedelta(minutes=minutes_next)
+    else:
+        card.time_next_today = None
     card.save()
     user.save()
-    return HttpResponse('{analyzed:True}', content_type='application/json')
+    return HttpResponse('{"analyzed":true}', content_type="application/json")

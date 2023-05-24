@@ -1,6 +1,27 @@
 <script>
-function renderCard(card) {
-	return "" + card.front + "/" + card.back;
+const csrf_token = '{{ csrf_token }}';
+let card = null;
+let flipped = false;
+let quality = null;
+function renderCard() {
+	let text;
+	if (card.id == null) {
+		text = "<h2>Cards Done For Today!</h2><p>Check Back Tomorrow</h2>"; // TODO get how long it will be today if there are any time_next_today not null
+        	document.getElementById("flip-button").hidden = true;
+        	document.getElementById("good-button").hidden = true;
+        	document.getElementById("again-button").hidden = true;
+	} else if (flipped) {
+        	text = "" + card.front + "<hr/>" + card.back;
+        	document.getElementById("flip-button").hidden = true;
+        	document.getElementById("good-button").hidden = false;
+        	document.getElementById("again-button").hidden = false;
+	} else {
+		text = "" + card.front;
+        	document.getElementById("flip-button").hidden = false;
+        	document.getElementById("good-button").hidden = true;
+        	document.getElementById("again-button").hidden = true;
+	}
+	document.getElementById("card").innerHTML = text;
 }
 function load_card() {
 	fetch("/get_cards")
@@ -8,13 +29,38 @@ function load_card() {
 	if (response.ok) {return response.json()} else {
 	// TODO fix this
 	};})
-	.then((card) => {
-		document.getElementById("card").innerHTML = renderCard(card);
+	.then((c) => {
+		flipped = false;
+        	quality = null;
+        	console.log(c);
+		card = c;
+		renderCard()
 	});
+}
+function submit() {
+	if (quality == null) {
+		console.log("tried to submit without setting quality first");
+		return;
+	}
+	let data = new URLSearchParams();
+	data.append("body", JSON.stringify({id: card.id, quality: quality}));
+	fetch("/submit_card", {
+		method: 'post',
+		body: data,
+		headers: {
+                    'X-CSRFToken': csrf_token,
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
+	})
+	.then((response) => response.json())
+	.then((j) => {console.log(j); load_card()});
 }
 load_card();
 </script>
-<h1>Review Cards!!!</h1>
+<h1>Review Cards!</h1>
 
 <div id="card">
 </div>
+<button id="flip-button" onclick="flipped=true; renderCard();">Flip</button>
+<button id="again-button" onclick="quality=1; submit()" hidden="true">Again</button>
+<button id="good-button" onclick="quality=4; submit()" hidden="true">Remembered</button>
