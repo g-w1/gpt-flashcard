@@ -17,6 +17,8 @@ class User(AbstractUser):
         max_length=100
     )  # the school that the people belong to, we use this when fetching the assessment
     # this can definently be anonymized
+    last_used = models.DateField(default=datetime.date.today)
+
 
 class Card(models.Model):
     belongs = models.ForeignKey(User, on_delete=models.CASCADE)

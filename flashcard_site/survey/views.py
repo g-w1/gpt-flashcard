@@ -122,6 +122,12 @@ def submit_card(request):
     # get the card
     if not request.POST:
         return HttpResponse("/submit_card needs a POST request")
+    # reset the amount of new cards to 0 if a day (or more) has passed
+    if request.user.last_used != datetime.date.today():
+        request.user.new_cards_added_today = 0
+        request.user.last_used = datetime.date.today()
+        request.user.save()
+    # do the fancy algo
     req = json.loads(request.POST["body"])
     quality = req["quality"]
     id = req["id"]
@@ -240,18 +246,29 @@ def submit_assessment_response(request):
         return HttpResponse("/submit_assessment_response needs a POST request")
     user = request.user
     req = json.loads(request.POST["body"])
-    assessment = Assessment.objects.filter(id=req['assessment_id'], program=user.program)
+    assessment = Assessment.objects.filter(
+        id=req["assessment_id"], program=user.program
+    )
     if len(assessment) != 1:
-        return HttpResponse("a user can only submit an assessment in their program OR the id is invalid")
+        return HttpResponse(
+            "a user can only submit an assessment in their program OR the id is invalid"
+        )
     assessment = assessment[0]
-    supplied_answers = req['supplied_answers']
+    supplied_answers = req["supplied_answers"]
     # make sure it is valid json
     _ = json.loads(supplied_answers)
-    at_beginning = req['at_beginning']
+    at_beginning = req["at_beginning"]
 
-    a = AssessmentSubmission(user_belongs=user,assessment_belongs=assessment,supplied_answers=supplied_answers,at_beginning=req['at_beginning'])
+    a = AssessmentSubmission(
+        user_belongs=user,
+        assessment_belongs=assessment,
+        supplied_answers=supplied_answers,
+        at_beginning=req["at_beginning"],
+    )
     a.save()
     return HttpResponse('{"analyzed":true}', content_type="application/json")
+
+
 @login_required
 def get_assessment(request):
     # TODO do url param, group is in url
