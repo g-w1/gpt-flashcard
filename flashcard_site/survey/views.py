@@ -8,6 +8,9 @@ import math
 
 from .models import (
     Card,
+    ReviewStat,
+    Assessment,
+    AssessmentSubmission,
     QUEUE_TYPE_NEW,
     QUEUE_TYPE_NEW_FAILED,
     QUEUE_TYPE_LRN,
@@ -51,14 +54,18 @@ def get_cards(request):
     user = request.user
     # these are the ones that use time_next_today, because they are sensitive to minutes
     lrn_for_today = Card.objects.filter(
-        date_next__lte=datetime.date.today(), time_next_today__lte=datetime.datetime.today(), queue_type=QUEUE_TYPE_LRN
+        date_next__lte=datetime.date.today(),
+        time_next_today__lte=datetime.datetime.today(),
+        queue_type=QUEUE_TYPE_LRN,
     )
     lrn_for_today_card = get_card_from_cards(lrn_for_today)
     if lrn_for_today_card != None:
         return HttpResponse(lrn_for_today_card, content_type="application/json")
 
     new_failed_for_today = Card.objects.filter(
-        date_next__lte=datetime.date.today(), time_next_today__lte=datetime.datetime.today(), queue_type=QUEUE_TYPE_NEW_FAILED
+        date_next__lte=datetime.date.today(),
+        time_next_today__lte=datetime.datetime.today(),
+        queue_type=QUEUE_TYPE_NEW_FAILED,
     )
     new_failed_for_today_card = get_card_from_cards(new_failed_for_today)
     if new_failed_for_today_card != None:
@@ -78,7 +85,35 @@ def get_cards(request):
         new_for_today_card = get_card_from_cards(new_for_today)
         if new_for_today_card != None:
             return HttpResponse(new_for_today_card, content_type="application/json")
-    return HttpResponse(json.dumps({"id": None}), content_type="application/json")
+
+    # see if there are any cards left today in a few minutes
+    later_today = (
+        Card.objects.filter(
+            date_next=datetime.date.today(),
+        )
+        .exclude(queue_type=QUEUE_TYPE_NEW)
+        .order_by("time_next_today")
+    )
+    if len(later_today) == 0:
+        return HttpResponse(
+            json.dumps({"id": None, "laterToday": None}),
+            content_type="application/json",
+        )
+    else:
+        amount = len(later_today)
+        earliest = math.ceil(
+            (
+                later_today[0].time_next_today
+                - datetime.datetime.now(datetime.timezone.utc)
+            ).total_seconds()
+            / 60
+        )
+        return HttpResponse(
+            json.dumps(
+                {"id": None, "laterToday": {"amount": amount, "earliest_min": earliest}}
+            ),
+            content_type="application/json",
+        )
 
 
 @login_required
@@ -87,7 +122,6 @@ def submit_card(request):
     # get the card
     if not request.POST:
         return HttpResponse("/submit_card needs a POST request")
-    print(request.POST)
     req = json.loads(request.POST["body"])
     quality = req["quality"]
     id = req["id"]
@@ -101,12 +135,19 @@ def submit_card(request):
         )
     card = card[0]
 
+    # SETUP THE STATS
+    # fill in all the fields that we have now
+    stat_belongs = request.user
+    stat_card = card
+    stat_dtime_now = datetime.datetime.today()
+    stat_quality = quality
+    stat_interval_before = card.interval
+    stat_easiness_before = card.easiness
+    stat_date_scheduled_before = card.date_next
+    # We can acutally model the cards as some sort of finite state machine, which is really cool!
     # QUALITY:
-    # quality = 5: add .1 to easiness
     # quality = 4: easiness does not change
-    # quality = 3: subtract .14
-    # quality = 2: subtract .32
-    # quality = 1: subtract .54
+    # quality = 1: subtract .2
     minutes_next = None
     if card.queue_type == QUEUE_TYPE_NEW:
         if quality > 3:
@@ -120,6 +161,7 @@ def submit_card(request):
             minutes_next = 1
             card.repetitions = 0
         user.new_cards_added_today += 1
+        user.save()
     # the same as previous, but we don't increment the new card max counter
     elif card.queue_type == QUEUE_TYPE_NEW_FAILED:
         if quality > 3:
@@ -138,10 +180,10 @@ def submit_card(request):
             card.interval = 1
             card.repetitions = 1
         else:
-            card.queue_type = QUEUE_TYPE_LRN
+            card.queue_type = QUEUE_TYPE_NEW_FAILED
             card.interval = 0
             minutes_next = 1
-            card.repitin = 0
+            card.repetitions = 0
     elif card.queue_type == QUEUE_TYPE_REV:
         if quality < 3:
             card.interval = 0  # do it again today
@@ -158,15 +200,59 @@ def submit_card(request):
             card.repetitions += 1
     else:
         assert False  # we encountered a wrong queue_type
-    card.easiness += 0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02)
-    if card.easiness < 1.3:
-        card.easiness = 1.3
+    if quality == 1:
+        card.easiness -= 0.2
+        if card.easiness < 1.3:
+            card.easiness = 1.3
+    elif quality == 4:
+        pass  # don't change the easiness
     review_date = datetime.date.today() + datetime.timedelta(card.interval)
     card.date_next = review_date
     if minutes_next != None:
-        card.time_next_today = datetime.datetime.today() + datetime.timedelta(minutes=minutes_next)
+        card.time_next_today = datetime.datetime.today() + datetime.timedelta(
+            minutes=minutes_next
+        )
     else:
         card.time_next_today = None
     card.save()
-    user.save()
+    stat_interval_after = card.interval
+    stat_easiness_after = card.easiness
+    stat_date_scheduled_after = card.date_next
+    stat = ReviewStat(
+        belongs=stat_belongs,
+        card=stat_card,
+        dtime_now=stat_dtime_now,
+        quality=stat_quality,
+        interval_before=stat_interval_before,
+        interval_after=stat_interval_after,
+        easiness_before=stat_easiness_before,
+        easiness_after=stat_easiness_after,
+        date_scheduled_before=stat_date_scheduled_before,
+        date_scheduled_after=stat_date_scheduled_after,
+    )
+    stat.save()
     return HttpResponse('{"analyzed":true}', content_type="application/json")
+
+
+@login_required
+def submit_assessment_response(request):
+    if not request.POST:
+        return HttpResponse("/submit_assessment_response needs a POST request")
+    user = request.user
+    req = json.loads(request.POST["body"])
+    assessment = Assessment.objects.filter(id=req['assessment_id'], program=user.program)
+    if len(assessment) != 1:
+        return HttpResponse("a user can only submit an assessment in their program OR the id is invalid")
+    assessment = assessment[0]
+    supplied_answers = req['supplied_answers']
+    # make sure it is valid json
+    _ = json.loads(supplied_answers)
+    at_beginning = req['at_beginning']
+
+    a = AssessmentSubmission(user_belongs=user,assessment_belongs=assessment,supplied_answers=supplied_answers,at_beginning=req['at_beginning'])
+    a.save()
+    return HttpResponse('{"analyzed":true}', content_type="application/json")
+@login_required
+def get_assessment(request):
+    # TODO do url param, group is in url
+    assert user.group == urlparam_group

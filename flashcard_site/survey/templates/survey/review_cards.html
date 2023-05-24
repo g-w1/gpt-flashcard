@@ -1,4 +1,11 @@
 <script>
+function sify(num) {
+	if (num == 1) {
+		return '';
+	} else {
+		return 's';
+	}
+}
 const csrf_token = '{{ csrf_token }}';
 let card = null;
 let flipped = false;
@@ -6,10 +13,17 @@ let quality = null;
 function renderCard() {
 	let text;
 	if (card.id == null) {
-		text = "<h2>Cards Done For Today!</h2><p>Check Back Tomorrow</h2>"; // TODO get how long it will be today if there are any time_next_today not null
-        	document.getElementById("flip-button").hidden = true;
-        	document.getElementById("good-button").hidden = true;
-        	document.getElementById("again-button").hidden = true;
+		if (card.laterToday == null) {
+        		text = "<h2>Cards Done For Today!</h2><p>Check Back Tomorrow</h2>";
+                	document.getElementById("flip-button").hidden = true;
+                	document.getElementById("good-button").hidden = true;
+                	document.getElementById("again-button").hidden = true;
+        	} else {
+			text = `<h2>Cards Done For Now</h2><p>${card.laterToday.amount} card${sify(card.laterToday.amount)} left today.</p><p>Check back in ${card.laterToday.earliest_min} minute${sify(card.laterToday.earliest_min)}.`;
+                	document.getElementById("flip-button").hidden = true;
+                	document.getElementById("good-button").hidden = true;
+                	document.getElementById("again-button").hidden = true;
+        	}
 	} else if (flipped) {
         	text = "" + card.front + "<hr/>" + card.back;
         	document.getElementById("flip-button").hidden = true;
@@ -61,6 +75,6 @@ load_card();
 
 <div id="card">
 </div>
-<button id="flip-button" onclick="flipped=true; renderCard();">Flip</button>
+<button id="flip-button" onclick="flipped=true; renderCard();" hidden="true">Flip</button>
 <button id="again-button" onclick="quality=1; submit()" hidden="true">Again</button>
 <button id="good-button" onclick="quality=4; submit()" hidden="true">Remembered</button>
