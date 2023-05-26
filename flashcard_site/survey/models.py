@@ -18,6 +18,10 @@ class User(AbstractUser):
     )  # the school that the people belong to, we use this when fetching the assessment
     # this can definently be anonymized
     last_used = models.DateField(default=datetime.date.today)
+    time_for_writing = models.IntegerField(null=True, blank=True)
+    time_for_initial_assessment = models.IntegerField()
+    time_for_final_assessment = models.IntegerField(null=True, blank=True, default=None)
+    time_on_survey = models.IntegerField()
 
 
 class Card(models.Model):
@@ -52,10 +56,14 @@ class ReviewStat(models.Model):
     easiness_after = models.FloatField()
     date_scheduled_before = models.DateField()
     date_scheduled_after = models.DateField()
+    time_for_card = models.IntegerField()
 
     def review_missed(self):
-        pass
-        # TODO implement that if dtime_now > date_scheduled_before then return true because they are on different days
+        if self.dtime_now.date() > self.date_scheduled_before:
+            return True
+        return False
+    def __str__(self):
+        return f"{self.card.front}|s={self.time_for_card}|Q={self.quality}"
 
 
 class Assessment(models.Model):

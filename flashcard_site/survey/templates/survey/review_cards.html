@@ -1,3 +1,5 @@
+{% load static %}
+<script src="{% static 'survey/timeme.min.js' %}" /></script>
 <script>
 function sify(num) {
 	if (num == 1) {
@@ -48,6 +50,7 @@ function load_card() {
         	quality = null;
         	console.log(c);
 		card = c;
+		TimeMe.startTimer("card-" + card.id);
 		renderCard()
 	});
 }
@@ -57,7 +60,9 @@ function submit() {
 		return;
 	}
 	let data = new URLSearchParams();
-	data.append("body", JSON.stringify({id: card.id, quality: quality}));
+	TimeMe.stopTimer("card-" + card.id);
+	const time_for_card = TimeMe.getTimeOnPageInSeconds("card-" + card.id);
+	data.append("body", JSON.stringify({id: card.id, quality: quality, time_for_card: time_for_card}));
 	fetch("/submit_card", {
 		method: 'post',
 		body: data,
@@ -69,6 +74,10 @@ function submit() {
 	.then((response) => response.json())
 	.then((j) => {console.log(j); load_card()});
 }
+TimeMe.initialize({
+	currentPageName: "review-page",
+	idleTimeoutInSecond: 45,
+});
 load_card();
 </script>
 <h1>Review Cards!</h1>

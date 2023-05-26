@@ -131,6 +131,7 @@ def submit_card(request):
     req = json.loads(request.POST["body"])
     quality = req["quality"]
     id = req["id"]
+    stat_time_for_card = req["time_for_card"]
     card = Card.objects.filter(
         id=id, belongs=user, date_next__lte=datetime.date.today()
     )
@@ -235,6 +236,7 @@ def submit_card(request):
         easiness_after=stat_easiness_after,
         date_scheduled_before=stat_date_scheduled_before,
         date_scheduled_after=stat_date_scheduled_after,
+        time_for_card=stat_time_for_card,
     )
     stat.save()
     return HttpResponse('{"analyzed":true}', content_type="application/json")
