@@ -13,15 +13,18 @@ NEW_ADDED_EVERY_DAY = 5
 
 class User(AbstractUser):
     new_cards_added_today = models.IntegerField(default=0)
-    program = models.CharField(
+    subject_group = models.CharField(
         max_length=100
     )  # the school that the people belong to, we use this when fetching the assessment
     # this can definently be anonymized
     last_used = models.DateField(default=datetime.date.today)
     time_for_writing = models.IntegerField(null=True, blank=True)
-    time_for_initial_assessment = models.IntegerField()
+    time_for_initial_assessment = models.IntegerField(null=True, blank=True, default=None)
     time_for_final_assessment = models.IntegerField(null=True, blank=True, default=None)
-    time_on_survey = models.IntegerField()
+    time_for_survey = models.IntegerField()
+
+    # what time the final_assessment opens
+    date_final_opens = models.DateField()
 
 
 class Card(models.Model):
@@ -62,17 +65,18 @@ class ReviewStat(models.Model):
         if self.dtime_now.date() > self.date_scheduled_before:
             return True
         return False
+
     def __str__(self):
         return f"{self.card.front}|s={self.time_for_card}|Q={self.quality}"
 
 
 class Assessment(models.Model):
-    program = models.CharField(
+    subject_group = models.CharField(
         max_length=100
     )  # the school that the people belong to, we use this when fetching the assessment
     questions = (
         models.TextField()
-    )  # this is just some json array schema like this [{'question': 'What is your favorite color?', 'answers': ['Red', 'Blue', 'Green']}, ...]
+    )  # this is just some json array schema like this [{"question": "What is your favorite color?", "answers": ["Red", "Blue", "Green"]}, ...]
     correct_answers = (
         models.TextField()
     )  # an array with the correct indexes [2, ...] means green is fav color
@@ -82,12 +86,10 @@ class AssessmentSubmission(models.Model):
     user_belongs = models.ForeignKey(
         User, on_delete=models.CASCADE
     )  # TODO look into if we will be deleting users; I don't think so so this is fine
-    # user_belongs.program == assessment_belongs.program # TODO make this an assertion
+    # user_belongs.subject_group == assessment_belongs.subject_group # TODO make this an assertion
     assessment_belongs = models.ForeignKey(Assessment, on_delete=models.CASCADE)
     supplied_answers = (
         models.TextField()
     )  # this is just some json arary schema like this [2, ...] where the number is just the index in the answer of the corresponding question.
     # so in this case, the user would have answered 'Green' (index 2) to the first question. len(anwsers) must equal len(asessment.questions)
-    at_beginning = (
-        models.BooleanField()
-    )  # we want to test the user on the same set of questions at the end
+    at_beginning = models.BooleanField()

@@ -19,6 +19,14 @@ from .models import (
 )
 
 
+def error(message):
+    s = f"{{'analyzed': false, 'error':'{message}'}}"
+    return HttpResponse(
+        s,
+        content_type="application/json",
+    )
+
+
 def index(request):
     return HttpResponse("At Survey Index TODO")
 
@@ -89,7 +97,7 @@ def get_cards(request):
     # see if there are any cards left today in a few minutes
     later_today = (
         Card.objects.filter(
-            date_next=datetime.date.today(),
+            date_next=datetime.date.today(), time_next_today__isnull=False
         )
         .exclude(queue_type=QUEUE_TYPE_NEW)
         .order_by("time_next_today")
@@ -117,11 +125,39 @@ def get_cards(request):
 
 
 @login_required
+def add_time(request):
+    user = request.user
+    if not request.POST:
+        return error("/add_time needs a POST request")
+    req = json.loads(request.POST["body"])
+    seconds = req["seconds"]
+    type = req["type"]
+    if type == "writing":
+        if user.time_for_writing != None:
+            user.time_for_writing += time
+        else:
+            return error(
+                "can't have user that does not write cards add time for writing"
+            )
+    elif type == "initial_assessment":
+        user.time_for_initial_assessment = time
+    elif type == "final_assessment":
+        user.time_for_final_assessment = time
+    elif type == "survey":
+        user.time_for_survey = time
+    else:
+        return error(
+            "please use a valid type: 'writing' 'initial_assessment' 'final_assessment' or 'survey'"
+        )
+    user.save()
+
+
+@login_required
 def submit_card(request):
     user = request.user
     # get the card
     if not request.POST:
-        return HttpResponse("/submit_card needs a POST request")
+        return error("/submit_card needs a POST request")
     # reset the amount of new cards to 0 if a day (or more) has passed
     if request.user.last_used != datetime.date.today():
         request.user.new_cards_added_today = 0
@@ -136,9 +172,8 @@ def submit_card(request):
         id=id, belongs=user, date_next__lte=datetime.date.today()
     )
     if len(card) != 1:
-        return HttpResponse(
-            "{'analyzed': false, 'error':'you submitted a card that does not exist, or from another user, or card that is not ready to be displayed yet'}",
-            content_type="application/json",
+        return error(
+            "you submitted a card that does not exist, or from another user, or card that is not ready to be displayed yet",
         )
     card = card[0]
 
@@ -252,7 +287,7 @@ def submit_assessment_response(request):
         id=req["assessment_id"], program=user.program
     )
     if len(assessment) != 1:
-        return HttpResponse(
+        return error(
             "a user can only submit an assessment in their program OR the id is invalid"
         )
     assessment = assessment[0]
@@ -272,6 +307,41 @@ def submit_assessment_response(request):
 
 
 @login_required
-def get_assessment(request):
-    # TODO do url param, group is in url
-    assert user.group == urlparam_group
+def get_assessment(request, subject_group, start):
+    at_start = bool(start) # TODO make this less prone to hacking and time-sensitive
+    user = request.user
+    if user.time_for_initial_assessment != None and start:
+        return error("can't do initial assessment twice")
+    if not start:
+        if user.time_for_final_assessment != None:
+            return error("can't do final assessment twice")
+        if user.date_final_opens > datetime.date.today():
+            return error(f"can't access final until {user.date_final_opens}")
+    if user.subject_group != subject_group:
+        return error("the subject_group equal the users's subject_group")
+    ass = Assessment.objects.filter(subject_group=subject_group)
+    assert len(ass) == 1
+    ass = ass[0]
+    questions = ass.questions
+    correct_answers = json.loads(ass.correct_answers)
+    if not request.POST:
+        return HttpResponse(
+            loader.get_template("survey/assess.html").render(
+                {"questions": questions}, request
+            )
+        )
+    else:
+        # we are submitting it
+        req = json.loads(request.POST["body"])
+        answers = req['answers']
+        time = req['time']
+        if len(answers) != len(correct_answers):
+            return error("length of the answers is not correct") # maybe the validation is off, all questions need to be answered
+        if at_start:
+            user.time_for_initial_assessment = time
+        else:
+            user.time_for_final_assessment = time
+        user.save()
+        sub = AssessmentSubmission(user_belongs=user, assessment_belongs=ass, supplied_answers=json.dumps(answers),at_beginning=at_start)
+        sub.save()
+        return redirect(review_cards) # TODO look up how to do redirect

@@ -1,0 +1,45 @@
+{% load static %}
+<script src="{% static 'survey/timeme.min.js' %}" /></script>
+<h1>Take An Assessment</h1>
+
+<form id="ass">
+<button onclick="submit()">Submit</button>
+</form>
+
+<textarea id="questions" hidden="true">
+    {{questions}}
+</textarea>
+<script>
+// TODO fix this, should be trivial
+function generateRadio(choices) {
+	s = "";
+	for (let choice of choices) {
+	s += `<input type="radio">${choice}</input>`;
+	}
+	return s;
+}
+function genQuestion(question, choices) {
+	return `
+	<hr/>
+	<p>${question}</p>
+	${generateRadio(choices)}
+	`;
+}
+const csrf_token = '{{ csrf_token }}';
+TimeMe.initialize({
+	currentPageName: "assess-page",
+	idleTimeoutInSecond: 45,
+});
+const questions = JSON.parse(document.getElementById("questions").innerHTML);
+let ass = document.getElementById("ass")
+for (let q of questions) {
+	ass.innerHTML += genQuestion(q.question, q.answers);
+}
+function submit() {
+	for (question of questions) {
+		// verify the question has been answered, use the browser
+	}
+	// get the answers as an array
+	// submit
+}
+</script>
