@@ -13,5 +13,6 @@ urlpatterns = [
         name="submit_assessment_response",
     ),
     path("add_time", views.add_time, name="add_time"),
-    path("get_assessment/<str:subject_group>/<str:start>", views.get_assessment, name="get_assessment") # we just convert it to a bool
+    path("get_assessment/<str:subject_group>/<str:start>", views.get_assessment, name="get_assessment"), # we just convert it to a bool
+    path('initial_survey', views.initial_survey_view, name='initial_survey'),
 ]

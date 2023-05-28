@@ -19,9 +19,6 @@ class User(AbstractUser):
     # this can definently be anonymized
     last_used = models.DateField(default=datetime.date.today)
     time_for_writing = models.IntegerField(null=True, blank=True)
-    time_for_initial_assessment = models.IntegerField(null=True, blank=True, default=None)
-    time_for_final_assessment = models.IntegerField(null=True, blank=True, default=None)
-    time_for_survey = models.IntegerField()
 
     # what time the final_assessment opens
     date_final_opens = models.DateField()
@@ -93,3 +90,24 @@ class AssessmentSubmission(models.Model):
     )  # this is just some json arary schema like this [2, ...] where the number is just the index in the answer of the corresponding question.
     # so in this case, the user would have answered 'Green' (index 2) to the first question. len(anwsers) must equal len(asessment.questions)
     at_beginning = models.BooleanField()
+    time_taken = models.PositiveIntegerField()
+class InitialSurvey(models.Model):
+    OCCUPATION_CHOICES = [
+        ('student', 'Student'),
+        ('employed', 'Employed'),
+        ('unemployed', 'Unemployed'),
+        ('retired', 'Retired'),
+    ]
+    YES_NO_CHOICES = [
+        ('yes', 'Yes'),
+        ('no', 'No'),
+    ]
+    LIKERT_SCALE_CHOICES = [(i, i) for i in range(1, 6)]
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    age = models.PositiveIntegerField()
+    occupation = models.CharField(max_length=20, choices=OCCUPATION_CHOICES)
+    used_flashcards = models.CharField(max_length=3, choices=YES_NO_CHOICES)
+    use_flashcards_normally = models.CharField(max_length=3, choices=YES_NO_CHOICES, blank=True, null=True)
+    flashcard_skill = models.IntegerField(choices=LIKERT_SCALE_CHOICES)
+    time_taken = models.PositiveIntegerField()

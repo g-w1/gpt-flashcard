@@ -11,6 +11,7 @@ from .models import (
     ReviewStat,
     Assessment,
     AssessmentSubmission,
+    InitialSurvey,
     QUEUE_TYPE_NEW,
     QUEUE_TYPE_NEW_FAILED,
     QUEUE_TYPE_LRN,
@@ -20,7 +21,7 @@ from .models import (
 
 
 def error(message):
-    s = f"{{'analyzed': false, 'error':'{message}'}}"
+    s = f'{{"analyzed": false, "error":"{message}"}}'
     return HttpResponse(
         s,
         content_type="application/json",
@@ -131,24 +132,10 @@ def add_time(request):
         return error("/add_time needs a POST request")
     req = json.loads(request.POST["body"])
     seconds = req["seconds"]
-    type = req["type"]
-    if type == "writing":
-        if user.time_for_writing != None:
-            user.time_for_writing += time
-        else:
-            return error(
-                "can't have user that does not write cards add time for writing"
-            )
-    elif type == "initial_assessment":
-        user.time_for_initial_assessment = time
-    elif type == "final_assessment":
-        user.time_for_final_assessment = time
-    elif type == "survey":
-        user.time_for_survey = time
+    if user.time_for_writing != None:
+        user.time_for_writing += time
     else:
-        return error(
-            "please use a valid type: 'writing' 'initial_assessment' 'final_assessment' or 'survey'"
-        )
+        return error("can't have user that does not write cards add time for writing")
     user.save()
 
 
@@ -306,24 +293,35 @@ def submit_assessment_response(request):
     return HttpResponse('{"analyzed":true}', content_type="application/json")
 
 
+# Sees if it is 'true'
+def b(boo):
+    return boo == "true" or boo == "True"
+
 @login_required
 def get_assessment(request, subject_group, start):
-    at_start = bool(start) # TODO make this less prone to hacking and time-sensitive
+    start = b(start)
     user = request.user
-    if user.time_for_initial_assessment != None and start:
-        return error("can't do initial assessment twice")
-    if not start:
-        if user.time_for_final_assessment != None:
-            return error("can't do final assessment twice")
-        if user.date_final_opens > datetime.date.today():
-            return error(f"can't access final until {user.date_final_opens}")
+    
+    # Get the Assessment object for the given subject group.
+    try:
+        ass = Assessment.objects.get(subject_group=subject_group)
+    except Assessment.DoesNotExist:
+        return error("Invalid subject group.")
+    
+    # Check if the user has already submitted an assessment for this subject group
+    if AssessmentSubmission.objects.filter(user_belongs=user, assessment_belongs=ass, at_beginning=start).exists():
+        return error("You have already submitted an assessment for this subject group.")
+    
     if user.subject_group != subject_group:
-        return error("the subject_group equal the users's subject_group")
-    ass = Assessment.objects.filter(subject_group=subject_group)
-    assert len(ass) == 1
-    ass = ass[0]
+        return error("The subject_group must equal the user's subject_group.")
+        
+    if not start:
+        if user.date_final_opens > datetime.date.today():
+            return error(f"Can't access final until {user.date_final_opens}")
+    
     questions = ass.questions
     correct_answers = json.loads(ass.correct_answers)
+    
     if not request.POST:
         return HttpResponse(
             loader.get_template("survey/assess.html").render(
@@ -333,15 +331,38 @@ def get_assessment(request, subject_group, start):
     else:
         # we are submitting it
         req = json.loads(request.POST["body"])
-        answers = req['answers']
-        time = req['time']
+        answers = req["answers"]
+        time = req["time"]
+        
         if len(answers) != len(correct_answers):
-            return error("length of the answers is not correct") # maybe the validation is off, all questions need to be answered
-        if at_start:
-            user.time_for_initial_assessment = time
-        else:
-            user.time_for_final_assessment = time
-        user.save()
-        sub = AssessmentSubmission(user_belongs=user, assessment_belongs=ass, supplied_answers=json.dumps(answers),at_beginning=at_start)
+            return error("The length of the answers is not correct.")
+        
+        sub = AssessmentSubmission(
+            user_belongs=user,
+            assessment_belongs=ass,
+            supplied_answers=json.dumps(answers),
+            at_beginning=start,
+            time_taken=time  # Store the time taken in the AssessmentSubmission object
+        )
         sub.save()
-        return redirect(review_cards) # TODO look up how to do redirect
+        
+        return HttpResponse('{"analyzed":true}', content_type="application/json")
+
+from .forms import InitialSurveyForm
+
+def initial_survey_view(request):
+    if InitialSurvey.objects.filter(user=request.user).exists():
+        return error("Can't submit initial survey twice") # TODO just redirect to something else
+    if request.method == "POST":
+        form = InitialSurveyForm(request.POST)
+        if form.is_valid():
+            survey = form.save(commit=False)
+            survey.user = request.user
+            survey.save()
+            ## TODO redirect to onboarding page
+            return HttpResponse('{"analyzed":true}', content_type="application/json")
+
+    else:
+        form = InitialSurveyForm()
+
+    return render(request, "survey/initial_survey.html", {"form": form})

@@ -1,0 +1,25 @@
+{% load static %}
+<script src="{% static 'survey/timeme.min.js' %}" /></script>
+<script type="text/javascript">
+    TimeMe.initialize({
+        currentPageName: "survey-page",
+        idleTimeoutInSeconds: 45,
+    });
+
+    function onSubmitForm() {
+        var timeSpent = TimeMe.getTimeOnCurrentPageInSeconds('survey-page');
+        document.getElementById('id_time_taken').value = timeSpent;
+    }
+</script>
+
+<form method="POST" onsubmit="onSubmitForm()">
+    {% csrf_token %}
+    {% if form.non_field_errors %}
+        <div class="alert alert-danger">
+            {{ form.non_field_errors }}
+        </div>
+    {% endif %}
+    {{ form.as_p }}
+    <input type="hidden" id="id_time_taken" name="time_taken" />
+    <button type="submit">Submit</button>
+</form>

@@ -1,45 +1,95 @@
 {% load static %}
-<script src="{% static 'survey/timeme.min.js' %}" /></script>
-<h1>Take An Assessment</h1>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Assessment</title>
+    <script src="{% static 'survey/timeme.min.js' %}" /></script>
+</head>
+<body>
+    <h1>Take An Assessment</h1>
 
-<form id="ass">
-<button onclick="submit()">Submit</button>
-</form>
+    <form id="ass">
+        <button type="button" onclick="submitForm()">Submit</button>
+    </form>
 
-<textarea id="questions" hidden="true">
-    {{questions}}
-</textarea>
-<script>
-// TODO fix this, should be trivial
-function generateRadio(choices) {
-	s = "";
-	for (let choice of choices) {
-	s += `<input type="radio">${choice}</input>`;
-	}
-	return s;
-}
-function genQuestion(question, choices) {
-	return `
-	<hr/>
-	<p>${question}</p>
-	${generateRadio(choices)}
-	`;
-}
-const csrf_token = '{{ csrf_token }}';
-TimeMe.initialize({
-	currentPageName: "assess-page",
-	idleTimeoutInSecond: 45,
-});
-const questions = JSON.parse(document.getElementById("questions").innerHTML);
-let ass = document.getElementById("ass")
-for (let q of questions) {
-	ass.innerHTML += genQuestion(q.question, q.answers);
-}
-function submit() {
-	for (question of questions) {
-		// verify the question has been answered, use the browser
-	}
-	// get the answers as an array
-	// submit
-}
-</script>
+    <textarea id="questions" hidden="true">
+        {{questions}}
+    </textarea>
+
+    <script>
+        function generateRadio(choices, questionIndex) {
+            let s = "";
+            for (let i = 0; i < choices.length; i++) {
+                s += `<input type="radio" name="question${questionIndex}" value="${i}">${choices[i]}</input>`;
+            }
+            return s;
+        }
+
+        function genQuestion(question, choices, questionIndex) {
+            return `
+            <hr/>
+            <p>${question}</p>
+            ${generateRadio(choices, questionIndex)}
+            `;
+        }
+
+        function submitForm() {
+            const answers = [];
+            for (let i = 0; i < questions.length; i++) {
+                let radios = document.getElementsByName('question'+i);
+                let isAnswered = false;
+                for (let radio of radios) {
+                    if (radio.checked) {
+                        answers.push(parseInt(radio.value));
+                        isAnswered = true;
+                        break;
+                    }
+                }
+                if (!isAnswered) {
+                    alert('Please answer all questions');
+                    return;
+                }
+            }
+
+            // create your form data
+            const formData = new FormData();
+            body = {
+            	answers: answers,
+            	time: TimeMe.getTimeOnCurrentPageInSeconds('assess-page')
+            };
+            formData.append('body', JSON.stringify(body));
+
+            // fetch request to submit data
+            fetch(window.location.pathname, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': csrf_token
+                }
+            }).then(response => {
+                if (response.ok) {
+                    // handle redirect
+                    window.location.href = '/review_cards'; // update with your actual redirect path
+                }
+            }).catch(error => {
+                console.error('Error:', error);
+            });
+        }
+
+        const csrf_token = '{{ csrf_token }}';
+
+        TimeMe.initialize({
+            currentPageName: "assess-page",
+            idleTimeoutInSecond: 45,
+        });
+
+        const questions = JSON.parse(document.getElementById("questions").innerHTML);
+        let ass = document.getElementById("ass");
+        for (let i = 0; i < questions.length; i++) {
+            let q = questions[i];
+            ass.innerHTML += genQuestion(q.question, q.answers, i);
+        }
+    </script>
+</body>
+</html>
+
