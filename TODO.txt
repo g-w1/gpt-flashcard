@@ -1,0 +1,3 @@
+* I need to add writing cards
+	* only allow people with time writing cards != None
+* Validate the subject group

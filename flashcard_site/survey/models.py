@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 import datetime
 import json
 
@@ -10,18 +10,48 @@ QUEUE_TYPE_NEW_FAILED = 3  # when you get something as new but you fail it, so w
 
 NEW_ADDED_EVERY_DAY = 5
 
+class UserManager(BaseUserManager):
+    """Manager for User Profiles"""
 
-class User(AbstractUser):
+    def create_user(self, email, password=None, **extra_fields):
+        """Create a new user profile"""
+        if not email:
+            raise ValueError('Users must have an email address')
+
+        email = self.normalize_email(email)
+        user = self.model(email=email, **extra_fields)
+        user.set_password(password)
+        user.save(using=self._db)
+
+        return user
+
+    def create_superuser(self, email, password):
+        """Create and save a new superuser with given details"""
+        user = self.create_user(email, password)
+        user.is_superuser = True
+        user.is_staff = True
+        user.save(using=self._db)
+
+        return user
+
+
+class User(AbstractBaseUser, PermissionsMixin):
+    email = models.EmailField(max_length=255, unique=True)
     new_cards_added_today = models.IntegerField(default=0)
-    subject_group = models.CharField(
-        max_length=100
-    )  # the school that the people belong to, we use this when fetching the assessment
-    # this can definently be anonymized
+    subject_group = models.CharField(max_length=100)
     last_used = models.DateField(default=datetime.date.today)
+    date_joined = models.DateTimeField(auto_now_add=True)
     time_for_writing = models.IntegerField(null=True, blank=True)
-
-    # what time the final_assessment opens
     date_final_opens = models.DateField()
+    is_active = models.BooleanField(default=True)
+    is_staff = models.BooleanField(default=False)
+
+    objects = UserManager()
+
+    USERNAME_FIELD = 'email'
+
+    def __str__(self):
+        return self.email
 
 
 class Card(models.Model):

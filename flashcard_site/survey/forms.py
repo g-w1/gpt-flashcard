@@ -1,5 +1,6 @@
 from django import forms
-from .models import InitialSurvey
+from .models import InitialSurvey, User
+from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 
 
 class InitialSurveyForm(forms.ModelForm):
@@ -25,7 +26,7 @@ class InitialSurveyForm(forms.ModelForm):
     )
     flashcard_skill = forms.ChoiceField(
         choices=InitialSurvey.LIKERT_SCALE_CHOICES,
-        widget=forms.RadioSelect, # TODO change the css
+        widget=forms.RadioSelect,  # TODO change the css
         label="Rate your skill at creating flashcards",
         help_text="Please rate your skill at creating flashcards, on a scale from 1 to 5.",
     )
@@ -33,3 +34,20 @@ class InitialSurveyForm(forms.ModelForm):
     class Meta:
         model = InitialSurvey
         exclude = ["user", "time_taken"]
+
+
+class CustomUserCreationForm(UserCreationForm):
+    class Meta(UserCreationForm):
+        model = User
+        fields = ("email","subject_group")
+
+
+class CustomUserChangeForm(UserChangeForm):
+    class Meta:
+        model = User
+        fields = ("email",)
+
+
+class LoginForm(forms.Form):
+    email = forms.EmailField()
+    password = forms.CharField(widget=forms.PasswordInput)

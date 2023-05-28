@@ -1,7 +1,9 @@
-from django.shortcuts import render, HttpResponse
+from django.shortcuts import render, HttpResponse, redirect
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth import authenticate, login, logout
 from django.db.models import Q
 from django.template import loader
+from .forms import InitialSurveyForm, CustomUserCreationForm, LoginForm
 import datetime
 import json
 import math
@@ -297,31 +299,34 @@ def submit_assessment_response(request):
 def b(boo):
     return boo == "true" or boo == "True"
 
+
 @login_required
 def get_assessment(request, subject_group, start):
     start = b(start)
     user = request.user
-    
+
     # Get the Assessment object for the given subject group.
     try:
         ass = Assessment.objects.get(subject_group=subject_group)
     except Assessment.DoesNotExist:
         return error("Invalid subject group.")
-    
+
     # Check if the user has already submitted an assessment for this subject group
-    if AssessmentSubmission.objects.filter(user_belongs=user, assessment_belongs=ass, at_beginning=start).exists():
+    if AssessmentSubmission.objects.filter(
+        user_belongs=user, assessment_belongs=ass, at_beginning=start
+    ).exists():
         return error("You have already submitted an assessment for this subject group.")
-    
+
     if user.subject_group != subject_group:
         return error("The subject_group must equal the user's subject_group.")
-        
+
     if not start:
         if user.date_final_opens > datetime.date.today():
             return error(f"Can't access final until {user.date_final_opens}")
-    
+
     questions = ass.questions
     correct_answers = json.loads(ass.correct_answers)
-    
+
     if not request.POST:
         return HttpResponse(
             loader.get_template("survey/assess.html").render(
@@ -333,26 +338,27 @@ def get_assessment(request, subject_group, start):
         req = json.loads(request.POST["body"])
         answers = req["answers"]
         time = req["time"]
-        
+
         if len(answers) != len(correct_answers):
             return error("The length of the answers is not correct.")
-        
+
         sub = AssessmentSubmission(
             user_belongs=user,
             assessment_belongs=ass,
             supplied_answers=json.dumps(answers),
             at_beginning=start,
-            time_taken=time  # Store the time taken in the AssessmentSubmission object
+            time_taken=time,  # Store the time taken in the AssessmentSubmission object
         )
         sub.save()
-        
+
         return HttpResponse('{"analyzed":true}', content_type="application/json")
 
-from .forms import InitialSurveyForm
 
 def initial_survey_view(request):
     if InitialSurvey.objects.filter(user=request.user).exists():
-        return error("Can't submit initial survey twice") # TODO just redirect to something else
+        return error(
+            "Can't submit initial survey twice"
+        )  # TODO just redirect to something else
     if request.method == "POST":
         form = InitialSurveyForm(request.POST)
         if form.is_valid():
@@ -366,3 +372,41 @@ def initial_survey_view(request):
         form = InitialSurveyForm()
 
     return render(request, "survey/initial_survey.html", {"form": form})
+
+
+### USER STUFF
+def register(request):
+    if request.method == "POST":
+        form = CustomUserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save(commit=False)
+            user.time_for_writing = None # TODO randomly assign to a control group that actually can write
+            user.date_final_opens = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(7 * 4) # TODO make it not 4 weeks
+            user.save()
+            email = form.cleaned_data["email"]
+            raw_password = form.cleaned_data["password1"]
+            user = authenticate(email=email, password=raw_password)
+            login(request, user)
+            return redirect("index")
+    else:
+        form = CustomUserCreationForm()
+    return render(request, "survey/register.html", {"form": form})
+
+
+def login_view(request):
+    if request.method == "POST":
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            user = authenticate(
+                email=form.cleaned_data["email"], password=form.cleaned_data["password"]
+            )
+            if user is not None:
+                login(request, user)
+                return redirect("index")
+    else:
+        form = LoginForm()
+    return render(request, "survey/login.html", {"form": form})
+
+def logout_view(request):
+    logout(request)
+    return redirect('login')
