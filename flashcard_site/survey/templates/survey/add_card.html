@@ -4,15 +4,17 @@
 <script src="{% static 'survey/timeme.min.js' %}" /></script>
 <script type="text/javascript">
     TimeMe.initialize({
-        currentPageName: "survey-page",
-        idleTimeoutInSeconds: 45,
+        currentPageName: "create-card-page",
+        idleTimeoutInSeconds: 30,
     });
 
     function onSubmitForm() {
-        var timeSpent = TimeMe.getTimeOnCurrentPageInSeconds('survey-page');
-        document.getElementById('id_time_taken').value = timeSpent;
+        var timeSpent = TimeMe.getTimeOnCurrentPageInSeconds('create-card-page');
+        document.getElementById('timeToCreate').value = timeSpent;
     }
 </script>
+
+<h2>New Card</h2>
 
 <form method="POST" onsubmit="onSubmitForm()">
     {% csrf_token %}
@@ -22,7 +24,7 @@
         </div>
     {% endif %}
     {{ form.as_p }}
-    <input type="hidden" id="id_time_taken" name="time_taken" />
+    <input type="hidden" id="timeToCreate" name="timeToCreate" />
     <button type="submit">Submit</button>
 </form>
 {% endblock %}

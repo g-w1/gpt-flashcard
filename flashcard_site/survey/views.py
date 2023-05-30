@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 from django.db.models import Q
 from django.template import loader
-from .forms import InitialSurveyForm, CustomUserCreationForm, LoginForm
+from .forms import InitialSurveyForm, CustomUserCreationForm, LoginForm, CardForm
 import datetime
 import json
 import math
@@ -22,7 +22,7 @@ from .models import (
     NEW_ADDED_EVERY_DAY,
     EXPERIMENT_GROUP_NONE,
     EXPERIMENT_GROUP_WRITING,
-    EXPERIMENT_GROUP_AI
+    EXPERIMENT_GROUP_AI,
 )
 
 
@@ -35,7 +35,7 @@ def error(message):
 
 
 def index(request):
-    return HttpResponse("At Survey Index TODO")
+    return render(request, "survey/index.html")
 
 
 @login_required
@@ -45,7 +45,8 @@ def review_cards(request):
             loader.get_template("survey/review_cards.html").render({}, request)
         )
     else:
-         return error("Sorry, you don't have access to this page") # TODO make it nicer
+        return error("Sorry, you don't have access to this page")  # TODO make it nicer
+
 
 def get_card_from_cards(cards):
     if len(cards) > 0:
@@ -316,6 +317,8 @@ def get_assessment(request, survey_group, start):
         survey_group = SurveyGroup.objects.get(name=survey_group)
         ass = Assessment.objects.get(survey_group=survey_group)
     except Assessment.DoesNotExist:
+        return error("Invalid assessment.")
+    except SurveyGroup.DoesNotExist:
         return error("Invalid survey group.")
 
     # Check if the user has already submitted an assessment for this subject group
@@ -371,6 +374,7 @@ def initial_survey_view(request):
         if form.is_valid():
             survey = form.save(commit=False)
             survey.user = request.user
+            survey.time_taken = int(float(request.POST["time_taken"]))
             survey.save()
             ## TODO redirect to onboarding page
             return HttpResponse('{"analyzed":true}', content_type="application/json")
@@ -387,8 +391,14 @@ def register(request):
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
             user = form.save(commit=False)
-            user.time_for_writing = None # TODO randomly assign to a control group that actually can write
-            user.date_final_opens = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(7 * 4) # TODO make it not 4 weeks
+            user.time_for_writing = (
+                None  # TODO randomly assign to a control group that actually can write
+            )
+            user.date_final_opens = datetime.datetime.now(
+                datetime.timezone.utc
+            ) + datetime.timedelta(
+                7 * 4
+            )  # TODO make it not 4 weeks
             user.save()
             email = form.cleaned_data["email"]
             raw_password = form.cleaned_data["password1"]
@@ -414,6 +424,29 @@ def login_view(request):
         form = LoginForm()
     return render(request, "survey/login.html", {"form": form})
 
+
 def logout_view(request):
     logout(request)
-    return redirect('login')
+    return redirect("login")
+
+
+def add_card(request):
+    if request.user.experiment_group == EXPERIMENT_GROUP_WRITING:
+        if request.user.time_for_writing == None:
+            request.user.time_for_writing = 0
+
+        if request.method == "POST":
+            time_to_create = int(float(request.POST["timeToCreate"]))
+            form = CardForm(request.POST)
+            if form.is_valid():
+                card = form.save(commit=False)
+                card.belongs = request.user
+                card.save()
+                request.user.time_for_writing += time_to_create
+                return redirect("add_card")
+        else:
+            form = CardForm()
+
+        return render(request, "survey/add_card.html", {"form": form})
+    else:
+        return error("TODO can't do writing if not in writing group")

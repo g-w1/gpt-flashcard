@@ -1,7 +1,5 @@
 * I need to add writing cards
 	* only allow people with time writing cards != None
-* Validate the subject group
-* Make surveygroup its own class
 * AI
 	* Give the previous paragraph as context for the AI or give the general topic in addition to the text to generate flashcards on.
 something like this for the prompt:
@@ -10,3 +8,5 @@ general topic: middle ages
 previous pagraph: .....
 target paragraph: .....
 cards for target paragraph: .....
+* add 3 groups for the user and only allow them to write cards if in the writing group
+only allow them to review cards if in the writing or ai group, not control

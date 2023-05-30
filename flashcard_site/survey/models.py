@@ -1,5 +1,9 @@
 from django.db import models
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
+from django.contrib.auth.models import (
+    AbstractBaseUser,
+    BaseUserManager,
+    PermissionsMixin,
+)
 import datetime
 import json
 
@@ -10,10 +14,13 @@ QUEUE_TYPE_NEW_FAILED = 3  # when you get something as new but you fail it, so w
 
 NEW_ADDED_EVERY_DAY = 5
 
+
 class SurveyGroup(models.Model):
     name = models.CharField(max_length=100)
+
     def __str__(self):
         return self.name
+
 
 class UserManager(BaseUserManager):
     """Manager for User Profiles"""
@@ -21,11 +28,23 @@ class UserManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
         """Create a new user profile"""
         if not email:
-            raise ValueError('Users must have an email address')
+            raise ValueError("Users must have an email address")
 
         email = self.normalize_email(email)
         user = self.model(email=email, **extra_fields)
+        user.time_for_writing = (
+            None  # TODO randomly assign to a control group that actually can write
+        )
+        user.date_final_opens = datetime.datetime.now(
+            datetime.timezone.utc
+        ) + datetime.timedelta(
+            7 * 4
+        )  # TODO make it not 4 weeks
         user.set_password(password)
+        survey_group, created = SurveyGroup.objects.get_or_create(
+            name="DEFAULT"
+        )  # TODO, we need to immediately change it from default
+        user.survey_group = survey_group
         user.save(using=self._db)
 
         return user
@@ -35,13 +54,17 @@ class UserManager(BaseUserManager):
         user = self.create_user(email, password)
         user.is_superuser = True
         user.is_staff = True
+        survey_group, created = SurveyGroup.objects.get_or_create(name="ADMIN")
+        user.survey_group = survey_group
         user.save(using=self._db)
 
         return user
 
+
 EXPERIMENT_GROUP_NONE = 0
 EXPERIMENT_GROUP_WRITING = 1
 EXPERIMENT_GROUP_AI = 2
+
 
 class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(max_length=255, unique=True)
@@ -57,7 +80,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     objects = UserManager()
 
-    USERNAME_FIELD = 'email'
+    USERNAME_FIELD = "email"
 
     def __str__(self):
         return self.email
@@ -107,7 +130,9 @@ class ReviewStat(models.Model):
 
 
 class Assessment(models.Model):
-    survey_group = models.ForeignKey(SurveyGroup, on_delete=models.CASCADE)  # the school that the people belong to, we use this when fetching the assessment
+    survey_group = models.ForeignKey(
+        SurveyGroup, on_delete=models.CASCADE
+    )  # the school that the people belong to, we use this when fetching the assessment
     questions = (
         models.TextField()
     )  # this is just some json array schema like this [{"question": "What is your favorite color?", "answers": ["Red", "Blue", "Green"]}, ...]
@@ -128,16 +153,18 @@ class AssessmentSubmission(models.Model):
     # so in this case, the user would have answered 'Green' (index 2) to the first question. len(anwsers) must equal len(asessment.questions)
     at_beginning = models.BooleanField()
     time_taken = models.PositiveIntegerField()
+
+
 class InitialSurvey(models.Model):
     OCCUPATION_CHOICES = [
-        ('student', 'Student'),
-        ('employed', 'Employed'),
-        ('unemployed', 'Unemployed'),
-        ('retired', 'Retired'),
+        ("student", "Student"),
+        ("employed", "Employed"),
+        ("unemployed", "Unemployed"),
+        ("retired", "Retired"),
     ]
     YES_NO_CHOICES = [
-        ('yes', 'Yes'),
-        ('no', 'No'),
+        ("yes", "Yes"),
+        ("no", "No"),
     ]
     LIKERT_SCALE_CHOICES = [(i, i) for i in range(1, 6)]
 
@@ -145,6 +172,8 @@ class InitialSurvey(models.Model):
     age = models.PositiveIntegerField()
     occupation = models.CharField(max_length=20, choices=OCCUPATION_CHOICES)
     used_flashcards = models.CharField(max_length=3, choices=YES_NO_CHOICES)
-    use_flashcards_normally = models.CharField(max_length=3, choices=YES_NO_CHOICES, blank=True, null=True)
+    use_flashcards_normally = models.CharField(
+        max_length=3, choices=YES_NO_CHOICES, blank=True, null=True
+    )
     flashcard_skill = models.IntegerField(choices=LIKERT_SCALE_CHOICES)
     time_taken = models.PositiveIntegerField()

@@ -1,5 +1,5 @@
 from django import forms
-from .models import InitialSurvey, User
+from .models import InitialSurvey, User, Card
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 
 
@@ -39,7 +39,7 @@ class InitialSurveyForm(forms.ModelForm):
 class CustomUserCreationForm(UserCreationForm):
     class Meta(UserCreationForm):
         model = User
-        fields = ("email","survey_group")
+        fields = ("email", "survey_group")
 
 
 class CustomUserChangeForm(UserChangeForm):
@@ -51,3 +51,9 @@ class CustomUserChangeForm(UserChangeForm):
 class LoginForm(forms.Form):
     email = forms.EmailField()
     password = forms.CharField(widget=forms.PasswordInput)
+
+
+class CardForm(forms.ModelForm):
+    class Meta:
+        model = Card
+        fields = ["front", "back"]

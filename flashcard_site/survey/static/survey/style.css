@@ -1,0 +1,75 @@
+/* Global */
+body {
+  font-family: Arial, sans-serif;
+  text-align: center;
+  background-color: #f2f2f2;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Buttons */
+button {
+  background-color: #4CAF50;
+  color: white;
+  padding: 14px 20px;
+  margin: 8px 0;
+  border: none;
+  cursor: pointer;
+  width: 20%;
+  border-radius: 5px;
+  font-size: 1em;
+}
+
+button:hover {
+  opacity: 0.8;
+}
+
+/* Alerts */
+.alert {
+  padding: 20px;
+  background-color: #f44336;
+  color: white;
+}
+
+.alert-danger {
+  background-color: #f44336;
+}
+
+/* Forms */
+form {
+  border-radius: 5px;
+  background-color: #f2f2f2;
+  padding: 20px;
+  margin: auto;
+  width: 60%;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+}
+
+form input[type="text"], form input[type="password"], form textarea {
+  width: 100%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  display: inline-block;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+}
+
+form label {
+  padding: 12px 12px 12px 0;
+  display: inline-block;
+}
+
+/* Cards */
+#card {
+  background-color: white;
+  margin: 20px auto;
+  width: 50%;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+  border-radius: 5px;
+  padding: 20px;
+}
+
+hr {
+  border-top: 1px solid #bbb;
+}
