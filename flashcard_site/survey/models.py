@@ -39,11 +39,15 @@ class UserManager(BaseUserManager):
 
         return user
 
+EXPERIMENT_GROUP_NONE = 0
+EXPERIMENT_GROUP_WRITING = 1
+EXPERIMENT_GROUP_AI = 2
 
 class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(max_length=255, unique=True)
     new_cards_added_today = models.IntegerField(default=0)
     survey_group = models.ForeignKey(SurveyGroup, on_delete=models.CASCADE)
+    experiment_group = models.IntegerField(default=EXPERIMENT_GROUP_NONE)
     last_used = models.DateField(default=datetime.date.today)
     date_joined = models.DateTimeField(auto_now_add=True)
     time_for_writing = models.IntegerField(null=True, blank=True)

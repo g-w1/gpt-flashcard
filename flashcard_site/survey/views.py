@@ -20,6 +20,9 @@ from .models import (
     QUEUE_TYPE_LRN,
     QUEUE_TYPE_REV,
     NEW_ADDED_EVERY_DAY,
+    EXPERIMENT_GROUP_NONE,
+    EXPERIMENT_GROUP_WRITING,
+    EXPERIMENT_GROUP_AI
 )
 
 
@@ -37,10 +40,12 @@ def index(request):
 
 @login_required
 def review_cards(request):
-    return HttpResponse(
-        loader.get_template("survey/review_cards.html").render({}, request)
-    )
-
+    if request.user.experiment_group != EXPERIMENT_GROUP_NONE:
+        return HttpResponse(
+            loader.get_template("survey/review_cards.html").render({}, request)
+        )
+    else:
+         return error("Sorry, you don't have access to this page") # TODO make it nicer
 
 def get_card_from_cards(cards):
     if len(cards) > 0:
