@@ -14,6 +14,7 @@ from .models import (
     Assessment,
     AssessmentSubmission,
     InitialSurvey,
+    SurveyGroup,
     QUEUE_TYPE_NEW,
     QUEUE_TYPE_NEW_FAILED,
     QUEUE_TYPE_LRN,
@@ -301,15 +302,16 @@ def b(boo):
 
 
 @login_required
-def get_assessment(request, subject_group, start):
+def get_assessment(request, survey_group, start):
     start = b(start)
     user = request.user
 
     # Get the Assessment object for the given subject group.
     try:
-        ass = Assessment.objects.get(subject_group=subject_group)
+        survey_group = SurveyGroup.objects.get(name=survey_group)
+        ass = Assessment.objects.get(survey_group=survey_group)
     except Assessment.DoesNotExist:
-        return error("Invalid subject group.")
+        return error("Invalid survey group.")
 
     # Check if the user has already submitted an assessment for this subject group
     if AssessmentSubmission.objects.filter(
@@ -317,8 +319,8 @@ def get_assessment(request, subject_group, start):
     ).exists():
         return error("You have already submitted an assessment for this subject group.")
 
-    if user.subject_group != subject_group:
-        return error("The subject_group must equal the user's subject_group.")
+    if user.survey_group != survey_group:
+        return error("The survey_group must equal the user's survey_group.")
 
     if not start:
         if user.date_final_opens > datetime.date.today():

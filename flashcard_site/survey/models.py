@@ -10,6 +10,11 @@ QUEUE_TYPE_NEW_FAILED = 3  # when you get something as new but you fail it, so w
 
 NEW_ADDED_EVERY_DAY = 5
 
+class SurveyGroup(models.Model):
+    name = models.CharField(max_length=100)
+    def __str__(self):
+        return self.name
+
 class UserManager(BaseUserManager):
     """Manager for User Profiles"""
 
@@ -38,7 +43,7 @@ class UserManager(BaseUserManager):
 class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(max_length=255, unique=True)
     new_cards_added_today = models.IntegerField(default=0)
-    subject_group = models.CharField(max_length=100)
+    survey_group = models.ForeignKey(SurveyGroup, on_delete=models.CASCADE)
     last_used = models.DateField(default=datetime.date.today)
     date_joined = models.DateTimeField(auto_now_add=True)
     time_for_writing = models.IntegerField(null=True, blank=True)
@@ -98,9 +103,7 @@ class ReviewStat(models.Model):
 
 
 class Assessment(models.Model):
-    subject_group = models.CharField(
-        max_length=100
-    )  # the school that the people belong to, we use this when fetching the assessment
+    survey_group = models.ForeignKey(SurveyGroup, on_delete=models.CASCADE)  # the school that the people belong to, we use this when fetching the assessment
     questions = (
         models.TextField()
     )  # this is just some json array schema like this [{"question": "What is your favorite color?", "answers": ["Red", "Blue", "Green"]}, ...]
@@ -113,7 +116,7 @@ class AssessmentSubmission(models.Model):
     user_belongs = models.ForeignKey(
         User, on_delete=models.CASCADE
     )  # TODO look into if we will be deleting users; I don't think so so this is fine
-    # user_belongs.subject_group == assessment_belongs.subject_group # TODO make this an assertion
+    # user_belongs.survey_group == assessment_belongs.survey_group # TODO make this an assertion
     assessment_belongs = models.ForeignKey(Assessment, on_delete=models.CASCADE)
     supplied_answers = (
         models.TextField()

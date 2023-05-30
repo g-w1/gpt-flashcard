@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from .forms import CustomUserCreationForm, CustomUserChangeForm
-from .models import Card, User, ReviewStat, Assessment, AssessmentSubmission, InitialSurvey
+from .models import Card, User, ReviewStat, Assessment, AssessmentSubmission, InitialSurvey, SurveyGroup
 
 class CustomUserAdmin(UserAdmin):
     add_form = CustomUserCreationForm
@@ -13,7 +13,7 @@ class CustomUserAdmin(UserAdmin):
         ('Personal info', {'fields': ('last_login',)}),
         ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions')}),
         ('Important dates', {'fields': ('last_used', 'date_final_opens',)}),
-        ('Custom Fields', {'fields': ('new_cards_added_today', 'subject_group', 'time_for_writing')}),
+        ('Custom Fields', {'fields': ('new_cards_added_today', 'survey_group', 'time_for_writing')}),
     )
     add_fieldsets = (
         (None, {
@@ -31,5 +31,6 @@ admin.site.register(ReviewStat)
 admin.site.register(Assessment)
 admin.site.register(AssessmentSubmission)
 admin.site.register(InitialSurvey)
+admin.site.register(SurveyGroup)
 admin.site.register(User, CustomUserAdmin)
 

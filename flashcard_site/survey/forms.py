@@ -39,7 +39,7 @@ class InitialSurveyForm(forms.ModelForm):
 class CustomUserCreationForm(UserCreationForm):
     class Meta(UserCreationForm):
         model = User
-        fields = ("email","subject_group")
+        fields = ("email","survey_group")
 
 
 class CustomUserChangeForm(UserChangeForm):
