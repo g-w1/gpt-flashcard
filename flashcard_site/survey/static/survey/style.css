@@ -73,3 +73,28 @@ form label {
 hr {
   border-top: 1px solid #bbb;
 }
+
+.nav-container {
+  padding: 1em 0;
+  background-color: #f8f9fa;
+}
+
+.nav-container a {
+  color: #fff;
+  padding: 0.5em 1em;
+  text-decoration: none;
+  border-radius: 25px;
+  background-color: #007bff;
+  transition: background-color 0.3s ease;
+}
+
+.nav-container a:hover {
+  background-color: #0056b3;
+}
+.alert-button {
+    background-color: #dc3545 !important;  /* This sets the color to red */
+}
+
+.alert-button:hover {
+    background-color: #c82333 !important;  /* This sets the hover color to a darker red */
+}

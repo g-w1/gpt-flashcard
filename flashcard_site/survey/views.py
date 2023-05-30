@@ -331,7 +331,7 @@ def get_assessment(request, survey_group, start):
         return error("The survey_group must equal the user's survey_group.")
 
     if not start:
-        if user.date_final_opens > datetime.date.today():
+        if not user.final_assessment_is_due():
             return error(f"Can't access final until {user.date_final_opens}")
 
     questions = ass.questions
@@ -430,6 +430,7 @@ def logout_view(request):
     return redirect("login")
 
 
+@login_required
 def add_card(request):
     if request.user.experiment_group == EXPERIMENT_GROUP_WRITING:
         if request.user.time_for_writing == None:

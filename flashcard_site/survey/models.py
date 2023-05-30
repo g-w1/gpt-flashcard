@@ -85,6 +85,28 @@ class User(AbstractBaseUser, PermissionsMixin):
     def __str__(self):
         return self.email
 
+    @property
+    def needs_to_take_survey(self):
+        return not InitialSurvey.objects.filter(user=self).exists()
+
+    @property
+    def needs_to_take_initial_assessment(self):
+        return not AssessmentSubmission.objects.filter(
+            user_belongs=self,
+            at_beginning=True,
+        ).exists()
+
+    @property
+    def needs_to_take_final_assessment(self):
+        doesnt_exist = not AssessmentSubmission.objects.filter(
+            user_belongs=self,
+            at_beginning=True,
+        ).exists()
+        return self.final_assessment_is_due() and doesnt_exist
+
+    def final_assessment_is_due(self):
+        return user.date_final_opens <= datetime.date.today()
+
 
 class Card(models.Model):
     belongs = models.ForeignKey(User, on_delete=models.CASCADE)

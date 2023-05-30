@@ -1,4 +1,25 @@
 {% extends 'base.html' %}
 {% block content %}
 <h1>GPT-Flashcard Survey</h1>
+
+{% if user.is_authenticated %}
+	{% if user.experiment_group == 0 %} <!-- They only take the surveys, the control group -->
+	Hello, your only job in this survey is to take an assessment at the beginning and end, and take a survey.<br><br>
+	We will email you at {{ user.email }} when you need to take the final assessment.<br><br>
+	For now, take the initial survey and assessment in the top bar.
+	{% elif user.experiment_group == 1 %} <!-- The writing group -->
+	Hello, in this survey, your job is to write flashcards for your subject, and review them daily. You can write them with <a href="{% url 'add_card' %}">Add Card</a> and review them with <a href="{% url 'review_cards' %}">Review Cards</a>.<br><br>
+	If you haven't already, please also take the survey and assessment right now in by clicking on the links in the top bar.<br><br>
+	At the end of the study, we will email you to take the final assessment.
+	{% elif user.experiment_group == 2 %} <!-- The AI group -->
+	Hello, in this survey, your job is to review flashcards for your subject daily. We have provided the flashcards, so you can get review them with <a href="{% url 'review_cards' %}">Review Cards</a> or in the top bar.<br><br>
+	If you haven't already, please also take the survey and assessment right now in by clicking on the links in the top bar.<br><br>
+	At the end of the study, we will email you to take the final assessment.
+	{% endif %}
+{% else %}
+<p>
+Hello, if you have recieved an invitation to be part of this study with your school, please <a href="{% url 'register' %}">register</a>.
+Otherwise, you can just ignore this page.
+</p>
+{% endif %}
 {% endblock %}
