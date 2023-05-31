@@ -7,9 +7,11 @@ from .forms import InitialSurveyForm, CustomUserCreationForm, LoginForm, CardFor
 import datetime
 import json
 import math
+import random
 
 from .models import (
     Card,
+    User,
     ReviewStat,
     Assessment,
     AssessmentSubmission,
@@ -45,7 +47,7 @@ def review_cards(request):
             loader.get_template("survey/review_cards.html").render({}, request)
         )
     else:
-        return error("Sorry, you don't have access to this page")  # TODO make it nicer
+        return redirect("index")
 
 
 def get_card_from_cards(cards):
@@ -70,8 +72,9 @@ def get_card_from_cards(cards):
 @login_required
 def get_cards(request):
     user = request.user
+    cards_for_user = Card.objects.filter(belongs=user)
     # these are the ones that use time_next_today, because they are sensitive to minutes
-    lrn_for_today = Card.objects.filter(
+    lrn_for_today = cards_for_user.filter(
         date_next__lte=datetime.date.today(),
         time_next_today__lte=datetime.datetime.today(),
         queue_type=QUEUE_TYPE_LRN,
@@ -80,7 +83,7 @@ def get_cards(request):
     if lrn_for_today_card != None:
         return HttpResponse(lrn_for_today_card, content_type="application/json")
 
-    new_failed_for_today = Card.objects.filter(
+    new_failed_for_today = cards_for_user.filter(
         date_next__lte=datetime.date.today(),
         time_next_today__lte=datetime.datetime.today(),
         queue_type=QUEUE_TYPE_NEW_FAILED,
@@ -89,7 +92,7 @@ def get_cards(request):
     if new_failed_for_today_card != None:
         return HttpResponse(new_failed_for_today_card, content_type="application/json")
 
-    rev_for_today = Card.objects.filter(
+    rev_for_today = cards_for_user.filter(
         date_next__lte=datetime.date.today(), queue_type=QUEUE_TYPE_REV
     )
     rev_for_today_card = get_card_from_cards(rev_for_today)
@@ -97,7 +100,7 @@ def get_cards(request):
         return HttpResponse(rev_for_today_card, content_type="application/json")
 
     if user.new_cards_added_today < NEW_ADDED_EVERY_DAY:
-        new_for_today = Card.objects.filter(
+        new_for_today = cards_for_user.filter(
             date_next__lte=datetime.date.today(), queue_type=QUEUE_TYPE_NEW
         )
         new_for_today_card = get_card_from_cards(new_for_today)
@@ -106,7 +109,7 @@ def get_cards(request):
 
     # see if there are any cards left today in a few minutes
     later_today = (
-        Card.objects.filter(
+        cards_for_user.filter(
             date_next=datetime.date.today(), time_next_today__isnull=False
         )
         .exclude(queue_type=QUEUE_TYPE_NEW)
@@ -134,18 +137,18 @@ def get_cards(request):
         )
 
 
-@login_required
-def add_time(request):
-    user = request.user
-    if not request.POST:
-        return error("/add_time needs a POST request")
-    req = json.loads(request.POST["body"])
-    seconds = req["seconds"]
-    if user.time_for_writing != None:
-        user.time_for_writing += time
-    else:
-        return error("can't have user that does not write cards add time for writing")
-    user.save()
+# @login_required
+# def add_time(request):
+#     user = request.user
+#     if not request.POST:
+#         return error("/add_time needs a POST request")
+#     req = json.loads(request.POST["body"])
+#     seconds = req["seconds"]
+#     if user.time_for_writing != None:
+#         user.time_for_writing += time
+#     else:
+#         return error("can't have user that does not write cards add time for writing")
+#     user.save()
 
 
 @login_required
@@ -273,34 +276,34 @@ def submit_card(request):
     return HttpResponse('{"analyzed":true}', content_type="application/json")
 
 
-@login_required
-def submit_assessment_response(request):
-    if not request.POST:
-        return HttpResponse("/submit_assessment_response needs a POST request")
-    user = request.user
-    req = json.loads(request.POST["body"])
-    assessment = Assessment.objects.filter(
-        id=req["assessment_id"], program=user.program
-    )
-    if len(assessment) != 1:
-        return error(
-            "a user can only submit an assessment in their program OR the id is invalid"
-        )
-    assessment = assessment[0]
-    supplied_answers = req["supplied_answers"]
-    # make sure it is valid json
-    _ = json.loads(supplied_answers)
-    at_beginning = req["at_beginning"]
-
-    a = AssessmentSubmission(
-        user_belongs=user,
-        assessment_belongs=assessment,
-        supplied_answers=supplied_answers,
-        at_beginning=req["at_beginning"],
-    )
-    a.save()
-    return HttpResponse('{"analyzed":true}', content_type="application/json")
-
+# @login_required
+# def submit_assessment_response(request):
+#     if not request.POST:
+#         return HttpResponse("/submit_assessment_response needs a POST request")
+#     user = request.user
+#     req = json.loads(request.POST["body"])
+#     assessment = Assessment.objects.filter(
+#         id=req["assessment_id"], program=user.program
+#     )
+#     if len(assessment) != 1:
+#         return error(
+#             "a user can only submit an assessment in their program OR the id is invalid"
+#         )
+#     assessment = assessment[0]
+#     supplied_answers = req["supplied_answers"]
+#     # make sure it is valid json
+#     _ = json.loads(supplied_answers)
+#     at_beginning = req["at_beginning"]
+# 
+#     a = AssessmentSubmission(
+#         user_belongs=user,
+#         assessment_belongs=assessment,
+#         supplied_answers=supplied_answers,
+#         at_beginning=req["at_beginning"],
+#     )
+#     a.save()
+#     return HttpResponse('{"analyzed":true}', content_type="application/json")
+# 
 
 # Sees if it is 'true'
 def b(boo):
@@ -308,31 +311,21 @@ def b(boo):
 
 
 @login_required
-def get_assessment(request, survey_group, start):
+def get_assessment(request, start):
     start = b(start)
     user = request.user
 
-    # Get the Assessment object for the given subject group.
-    try:
-        survey_group = SurveyGroup.objects.get(name=survey_group)
-        ass = Assessment.objects.get(survey_group=survey_group)
-    except Assessment.DoesNotExist:
-        return error("Invalid assessment.")
-    except SurveyGroup.DoesNotExist:
-        return error("Invalid survey group.")
+    ass = Assessment.objects.get(survey_group=user.survey_group)
 
     # Check if the user has already submitted an assessment for this subject group
     if AssessmentSubmission.objects.filter(
         user_belongs=user, assessment_belongs=ass, at_beginning=start
     ).exists():
-        return error("You have already submitted an assessment for this subject group.")
-
-    if user.survey_group != survey_group:
-        return error("The survey_group must equal the user's survey_group.")
+        return redirect('index')
 
     if not start:
         if not user.final_assessment_is_due():
-            return error(f"Can't access final until {user.date_final_opens}")
+            return redirect('index')
 
     questions = ass.questions
     correct_answers = json.loads(ass.correct_answers)
@@ -361,14 +354,12 @@ def get_assessment(request, survey_group, start):
         )
         sub.save()
 
-        return HttpResponse('{"analyzed":true}', content_type="application/json")
+        return redirect('index')
 
 
 def initial_survey_view(request):
     if InitialSurvey.objects.filter(user=request.user).exists():
-        return error(
-            "Can't submit initial survey twice"
-        )  # TODO just redirect to something else
+        return redirect('index')
     if request.method == "POST":
         form = InitialSurveyForm(request.POST)
         if form.is_valid():
@@ -377,13 +368,42 @@ def initial_survey_view(request):
             survey.time_taken = int(float(request.POST["time_taken"]))
             survey.save()
             ## TODO redirect to onboarding page
-            return HttpResponse('{"analyzed":true}', content_type="application/json")
+            redirect('index')
 
     else:
         form = InitialSurveyForm()
 
     return render(request, "survey/initial_survey.html", {"form": form})
 
+def get_disto_experiment_groups_in_survey_group(survey_group):
+    users = User.objects.filter(survey_group=survey_group)
+    none = 0
+    writing = 0
+    ai = 0
+    for user in users:
+        if user.experiment_group == EXPERIMENT_GROUP_NONE:
+            none += 1
+        elif user.experiment_group == EXPERIMENT_GROUP_WRITING:
+            writing += 1
+        elif user.experiment_group == EXPERIMENT_GROUP_AI:
+            ai += 1
+        else:
+            assert False # the experiment group should be one of the three
+        return [none, writing, ai]
+def get_experiment_group_for_next_user(survey_group):
+    distros = get_disto_experiment_groups_in_survey_group(survey_group)
+     # Check if all groups have the same distribution
+    if distros.count(distros[0]) == len(distros):
+        # if yes, return a random group
+        return random.choice([EXPERIMENT_GROUP_NONE, EXPERIMENT_GROUP_WRITING, EXPERIMENT_GROUP_AI])
+    else:
+        # if no, return the group with the least distribution
+        if distros[0] == min(distros):
+            return EXPERIMENT_GROUP_NONE
+        elif distros[1] == min(distros):
+            return EXPERIMENT_GROUP_WRITING
+        else:
+            return EXPERIMENT_GROUP_AI
 
 ### USER STUFF
 def register(request):
@@ -391,9 +411,8 @@ def register(request):
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
             user = form.save(commit=False)
-            user.time_for_writing = (
-                None  # TODO randomly assign to a control group that actually can write
-            )
+            user.experiment_group = get_experiment_group_for_next_user(user.survey_group)
+            user.time_for_writing = None if user.experiment_group != EXPERIMENT_GROUP_WRITING else 0
             user.date_final_opens = datetime.datetime.now(
                 datetime.timezone.utc
             ) + datetime.timedelta(
@@ -450,4 +469,4 @@ def add_card(request):
 
         return render(request, "survey/add_card.html", {"form": form})
     else:
-        return error("TODO can't do writing if not in writing group")
+        return redirect('index')

@@ -8,13 +8,7 @@ urlpatterns = [
     path("submit_card", views.submit_card, name="submit_card"),
     path("review_cards", views.review_cards, name="review_cards"),
     path(
-        "submit_assessment_response",
-        views.submit_assessment_response,
-        name="submit_assessment_response",
-    ),
-    path("add_time", views.add_time, name="add_time"),
-    path(
-        "get_assessment/<str:survey_group>/<str:start>",
+        "get_assessment/<str:start>",
         views.get_assessment,
         name="get_assessment",
     ),  # we just convert it to a bool

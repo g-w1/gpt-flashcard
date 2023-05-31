@@ -23,10 +23,10 @@
                     <a href="{% url 'initial_survey' %}" class="alert-button">Take Survey</a>
                 {% endif %}
                 {% if user.is_authenticated and user.needs_to_take_initial_assessment %}
-                    <a href="{% url 'get_assessment' user.survey_group 'true' %}" class="alert-button">Initial Assessment</a>
+                    <a href="{% url 'get_assessment' 'true' %}" class="alert-button">Initial Assessment</a>
                 {% endif %}
                 {% if user.is_authenticated and user.needs_to_take_final_assessment %}
-                    <a href="{% url 'get_assessment' user.survey_group 'false' %}" class="alert-button">Final Assessment</a>
+                    <a href="{% url 'get_assessment' 'false' %}" class="alert-button">Final Assessment</a>
                 {% endif %}
             {% else %}
                 <a href="{% url 'login' %}">Login</a>

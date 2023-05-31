@@ -1,5 +1,5 @@
 from django import forms
-from .models import InitialSurvey, User, Card
+from .models import InitialSurvey, User, Card, SurveyGroup
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 
 
@@ -37,9 +37,17 @@ class InitialSurveyForm(forms.ModelForm):
 
 
 class CustomUserCreationForm(UserCreationForm):
+    survey_group = forms.CharField()
     class Meta(UserCreationForm):
         model = User
         fields = ("email", "survey_group")
+    def clean_survey_group(self):
+        survey_group_name = self.cleaned_data['survey_group']
+        try: 
+            survey_group =  SurveyGroup.objects.get(name=survey_group_name)
+        except SurveyGroup.DoesNotExist:
+            raise forms.ValidationError("The group does not exist, please enter a valid group code.")
+        return survey_group
 
 
 class CustomUserChangeForm(UserChangeForm):
