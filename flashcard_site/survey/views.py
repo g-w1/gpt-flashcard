@@ -463,6 +463,7 @@ def add_card(request):
                 card.belongs = request.user
                 card.save()
                 request.user.time_for_writing += time_to_create
+                request.user.save()
                 return redirect("add_card")
         else:
             form = CardForm()
