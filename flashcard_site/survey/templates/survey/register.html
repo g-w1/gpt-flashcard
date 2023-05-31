@@ -4,6 +4,27 @@
   <form method="post">
   {% csrf_token %}
     {{ form.as_p }}
+  <div id="informed-consent" style="text-align: left;"> <!-- TODO do I need to actually collect the signature -->
+<br><b>Student Researcher(s):</b> Jacob Goldman-Wetzler
+<br><b>Title of Project:</b> Using Large Language Models to Enhance Spaced Repetition Learning
+<br><b>You are being asked to volunteer to participate in this science project.</b> If you would like to participate, please sign in the appropriate area below.
+<br><b>Purpose of the project:</b> The purpose of this study is to evaluate if Large Language Models can replace humans in creating good flashcards for use in spaced repetition learning.
+<br><b>If you participate, you will be asked to:</b> Take a survey and assessment at the beginning of the study. Do online flashcards daily during the study and take an assessment at the end of the study.
+<br><b>Time required for participation:</b> 5-10 minutes every day during the study. The study will last for 4 weeks for every participant. You may be asked to write flashcards or to not do flashcards at all.
+<br><b>Potential Risks of Study:</b> There are no risks associated with this study.
+<br><b>Benefits:</b> The participants will learn a valuable skill of spaced repetition flashcards and they will learn information about various subjects.
+<br><b>How confidentiality will be maintained:</b> All of the data will be on a secure server. I will only analyze anonymized data from the database from the server. I will not analyze any personal information.
+<br><b>If you have any questions about this study, feel free to contact:</b>
+<br><b>Adult Sponsor/QS/DS:</b> Melissa Shandroff, shandroffm@hohschools.org
+<br><b>Voluntary Participation:</b> Participation in this study is completely voluntary. There will be no negative consequences if you decide not to participate, stop participating, or refuse to answer any question.
+<br><b>By signing this form I am attesting that I have read and understand the information above and I freely give my consent/ assent to participate or permission for my child to participate.
+<br><b>Date:</b> <input type="date"></input>
+<br><b>Participant Name:</b> <input></input>
+<br><b>Participant Signature:</b> <input></input>
+<br><b>Parental Name:</b> <input></input>
+<br><b>Parental Signature:</b> <input></input>
+
+  </div>
     <button type="submit">Register</button>
   </form>
 {% endblock %}
