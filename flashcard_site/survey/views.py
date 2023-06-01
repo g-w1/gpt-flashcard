@@ -81,7 +81,7 @@ def review_cards(request):
         return redirect("index")
 
 
-def get_card_from_cards(cards):
+def get_card_from_cards(cards, num_cards_to_do_today):
     if len(cards) > 0:
         review = cards[0]
         id = review.id
@@ -94,6 +94,7 @@ def get_card_from_cards(cards):
                 "front": front,
                 "back": back,
                 "queue_type": queue_type,
+                "numToDoToday": num_cards_to_do_today
             }
         )
     else:
@@ -103,6 +104,7 @@ def get_card_from_cards(cards):
 @login_required
 def get_cards(request):
     user = request.user
+    num_cards_to_do_today = user.num_cards_to_do_today
     cards_for_user = Card.objects.filter(belongs=user)
     # these are the ones that use time_next_today, because they are sensitive to minutes
     lrn_for_today = cards_for_user.filter(
@@ -110,7 +112,7 @@ def get_cards(request):
         time_next_today__lte=timezone.localtime(),
         queue_type=QUEUE_TYPE_LRN,
     )
-    lrn_for_today_card = get_card_from_cards(lrn_for_today)
+    lrn_for_today_card = get_card_from_cards(lrn_for_today, num_cards_to_do_today)
     if lrn_for_today_card != None:
         return HttpResponse(lrn_for_today_card, content_type="application/json")
 
@@ -119,14 +121,14 @@ def get_cards(request):
         time_next_today__lte=timezone.localtime(),
         queue_type=QUEUE_TYPE_NEW_FAILED,
     )
-    new_failed_for_today_card = get_card_from_cards(new_failed_for_today)
+    new_failed_for_today_card = get_card_from_cards(new_failed_for_today, num_cards_to_do_today)
     if new_failed_for_today_card != None:
         return HttpResponse(new_failed_for_today_card, content_type="application/json")
 
     rev_for_today = cards_for_user.filter(
         date_next__lte=timezone.localdate(), queue_type=QUEUE_TYPE_REV
     )
-    rev_for_today_card = get_card_from_cards(rev_for_today)
+    rev_for_today_card = get_card_from_cards(rev_for_today, num_cards_to_do_today)
     if rev_for_today_card != None:
         return HttpResponse(rev_for_today_card, content_type="application/json")
 
@@ -134,7 +136,7 @@ def get_cards(request):
         new_for_today = cards_for_user.filter(
             date_next__lte=timezone.localdate(), queue_type=QUEUE_TYPE_NEW
         )
-        new_for_today_card = get_card_from_cards(new_for_today)
+        new_for_today_card = get_card_from_cards(new_for_today, num_cards_to_do_today)
         if new_for_today_card != None:
             return HttpResponse(new_for_today_card, content_type="application/json")
 
@@ -147,22 +149,30 @@ def get_cards(request):
         .order_by("time_next_today")
     )
     if len(later_today) == 0:
-        return HttpResponse(
-            json.dumps({"id": None, "laterToday": None}),
-            content_type="application/json",
-        )
+        num_new_for_today = (
+            cards_for_user.filter(
+                date_next__lte=timezone.localdate(), queue_type=QUEUE_TYPE_NEW
+            )
+        ).count()
+        if num_new_for_today == 0:
+            return HttpResponse(
+                json.dumps({"id": None, "laterToday": None, "numToDoToday": num_cards_to_do_today}),
+                content_type="application/json",
+            )
+        else:
+            return HttpResponse(
+                json.dumps({"id": None, "laterToday": None, "newAvail": True, "numToDoToday": num_cards_to_do_today}),
+                content_type="application/json",
+            )
+
     else:
         amount = len(later_today)
         earliest = math.ceil(
-            (
-                later_today[0].time_next_today
-                - timezone.localtime()
-            ).total_seconds()
-            / 60
+            (later_today[0].time_next_today - timezone.localtime()).total_seconds() / 60
         )
         return HttpResponse(
             json.dumps(
-                {"id": None, "laterToday": {"amount": amount, "earliest_min": earliest}}
+                {"id": None, "laterToday": {"amount": amount, "earliest_min": earliest, }, "numToDoToday": num_cards_to_do_today}
             ),
             content_type="application/json",
         )
@@ -184,9 +194,7 @@ def submit_card(request):
     quality = req["quality"]
     id = req["id"]
     stat_time_for_card = req["time_for_card"]
-    card = Card.objects.filter(
-        id=id, belongs=user, date_next__lte=timezone.localdate()
-    )
+    card = Card.objects.filter(id=id, belongs=user, date_next__lte=timezone.localdate())
     if len(card) != 1:
         return error(
             "you submitted a card that does not exist, or from another user, or card that is not ready to be displayed yet",

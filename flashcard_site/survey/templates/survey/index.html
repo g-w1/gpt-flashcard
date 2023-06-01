@@ -1,21 +1,53 @@
 {% extends 'base.html' %}
 {% block content %}
-<h1>GPT-Flashcard Survey</h1>
+<h1>Flashcard Survey</h1>
 
 {% if user.is_authenticated %}
-	{% if user.experiment_group == 0 %} <!-- They only take the surveys, the control group -->
-	Hello, your only job in this survey is to take an assessment at the beginning and end, and take a survey.<br><br>
-	We will email you at {{ user.email }} when you need to take the final assessment.<br><br>
-	For now, take the initial survey and assessment in the top bar.
-	{% elif user.experiment_group == 1 %} <!-- The writing group -->
-	Hello, in this survey, your job is to write flashcards for your subject, and review them daily. You can write them with <a href="{% url 'add_card' %}">Add Card</a> and review them with <a href="{% url 'review_cards' %}">Review Cards</a>.<br><br>
-	If you haven't already, please also take the survey and assessment right now in by clicking on the links in the top bar.<br><br>
-	At the end of the study, we will email you to take the final assessment.
-	{% elif user.experiment_group == 2 %} <!-- The AI group -->
-	Hello, in this survey, your job is to review flashcards for your subject daily. We have provided the flashcards, so you can get review them with <a href="{% url 'review_cards' %}">Review Cards</a> or in the top bar.<br><br>
-	If you haven't already, please also take the survey and assessment right now in by clicking on the links in the top bar.<br><br>
-	At the end of the study, we will email you to take the final assessment.
-	{% endif %}
+{% if user.experiment_group == 0 %} <!-- They only take the surveys, the control group -->
+        Hello, your only job in this survey is to take an assessment at the beginning and end, and take a survey.<br>
+        <p>
+        {% if not user.needs_to_take_final_assessment %}
+            We will email you at <b>{{ user.email }}</b> when you need to take the final assessment.<br>
+        {% endif %}
+        {% if user.needs_to_take_initial_assessment and user.needs_to_take_survey %}
+            For now, take the initial survey and assessment in the top bar.
+        {% elif user.needs_to_take_survey %}
+            For now, take the initial survey in the top bar.
+        {% elif user.needs_to_take_initial_assessment %}
+            For now, take the initial survey in the top bar.
+        {% endif %}
+        </p>
+{% elif user.experiment_group == 1 %} <!-- The writing group -->
+        Hello, in this survey, your job is to write flashcards for your subject, and review them daily. You can write them with <a href="{% url 'add_card' %}">Add Card</a> and review them with <a href="{% url 'review_cards' %}">Review Cards</a>.<br>
+        <p>The system will automatically schedule the flashcards, so all you have to do is to write the flashcards, and then review them until there are now more reviews left</p>
+        <p>
+        {% if not user.needs_to_take_final_assessment %}
+            We will email you at <b>{{ user.email }}</b> when you need to take the final assessment.<br>
+        {% endif %}
+        {% if user.needs_to_take_initial_assessment and user.needs_to_take_survey %}
+            For now, take the initial survey and assessment in the top bar.
+        {% elif user.needs_to_take_survey %}
+            For now, take the initial survey in the top bar.
+        {% elif user.needs_to_take_initial_assessment %}
+            For now, take the initial survey in the top bar.
+        {% endif %}
+        </p>
+{% elif user.experiment_group == 2 %} <!-- The AI group -->
+        Hello, in this survey, your job is to review flashcards for your subject daily. We have provided the flashcards, so you can get review them with <a href="{% url 'review_cards' %}">Review Cards</a> or in the top bar.<br>
+        <p>We have provided the flashcards, so all you have to do is review them daily. Every day please review them until there are no more flashcards left. This will help you learn the subject.</p>
+        <p>
+        {% if not user.needs_to_take_final_assessment %}
+            We will email you at <b>{{ user.email }}</b> when you need to take the final assessment.<br>
+        {% endif %}
+        {% if user.needs_to_take_initial_assessment and user.needs_to_take_survey %}
+            For now, take the initial survey and assessment in the top bar.
+        {% elif user.needs_to_take_survey %}
+            For now, take the initial survey in the top bar.
+        {% elif user.needs_to_take_initial_assessment %}
+            For now, take the initial survey in the top bar.
+        {% endif %}
+        </p>
+{% endif %}
 {% else %}
 <p>
 Hello, if you have recieved an invitation to be part of this study with your school, please <a href="{% url 'register' %}">register</a>.

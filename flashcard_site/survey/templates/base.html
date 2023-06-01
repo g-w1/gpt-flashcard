@@ -17,7 +17,11 @@
                     <a href="{% url 'add_card' %}">Add Card</a>
                 {% endif %}
                 {% if user.experiment_group != 0 %}
-                    <a href="{% url 'review_cards' %}">Review Cards</a>
+                    <a href="{% url 'review_cards' %}">Review Cards
+                    <span id="numToDoToday">{% if user.num_cards_to_do_today != 0 %}
+                    	({{user.num_cards_to_do_today}})
+                    {%endif%}</span>
+                    	</a>
                 {% endif %}
                 {% if user.is_authenticated and user.needs_to_take_survey %}
                     <a href="{% url 'initial_survey' %}" class="alert-button">Take Survey</a>

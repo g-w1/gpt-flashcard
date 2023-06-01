@@ -1,4 +1,6 @@
 from django.db import models
+from django.db.models import Q
+from django.utils import timezone
 from django.contrib.auth.models import (
     AbstractBaseUser,
     BaseUserManager,
@@ -35,9 +37,7 @@ class UserManager(BaseUserManager):
         user.time_for_writing = (
             None  # TODO randomly assign to a control group that actually can write
         )
-        user.date_final_opens = datetime.datetime.now(
-            datetime.timezone.utc
-        ) + datetime.timedelta(
+        user.date_final_opens = timezone.localdate() + datetime.timedelta(
             7 * 4
         )  # TODO make it not 4 weeks
         user.set_password(password)
@@ -71,7 +71,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     new_cards_added_today = models.IntegerField(default=0)
     survey_group = models.ForeignKey(SurveyGroup, on_delete=models.CASCADE)
     experiment_group = models.IntegerField(default=EXPERIMENT_GROUP_NONE)
-    last_used = models.DateField(default=datetime.date.today)
+    last_used = models.DateField(default=timezone.localtime)
     date_joined = models.DateTimeField(auto_now_add=True)
     time_for_writing = models.IntegerField(null=True, blank=True)
     date_final_opens = models.DateField()
@@ -104,17 +104,24 @@ class User(AbstractBaseUser, PermissionsMixin):
         ).exists()
         return self.final_assessment_is_due() and doesnt_exist
 
+    @property
+    def num_cards_to_do_today(self):
+        cards_for_today = Card.objects.filter(Q(belongs=self) & Q(date_next__lte=timezone.localtime()) & (Q(time_next_today__lte=timezone.localtime()) | Q(time_next_today__isnull=True)))
+        new_cards_num = cards_for_today.filter(queue_type=QUEUE_TYPE_NEW).count()
+        possible_new_cards_num = min(new_cards_num, NEW_ADDED_EVERY_DAY - self.new_cards_added_today)
+        return cards_for_today.count() - new_cards_num + possible_new_cards_num
+
     def final_assessment_is_due(self):
-        return self.date_final_opens <= datetime.date.today()
+        return self.date_final_opens <= timezone.localdate()
 
 
 class Card(models.Model):
     belongs = models.ForeignKey(User, on_delete=models.CASCADE)
     front = models.TextField()
     back = models.TextField()
-    date_next = models.DateField(default=datetime.date.today)
-    time_next_today = models.DateTimeField(null=True, blank=True, default=None)
+    date_next = models.DateField(default=timezone.localdate)
     date_next.editable = True
+    time_next_today = models.DateTimeField(null=True, blank=True, default=None)
     easiness = models.FloatField(
         default=2.5
     )  # Initial value for easiness factor in SM2 algorithm is 2.5

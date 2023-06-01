@@ -16,9 +16,18 @@ let flipped = false;
 let quality = null;
 function renderCard() {
 	let text;
+	if (card.numToDoToday != 0) {
+        	document.getElementById("numToDoToday").innerHTML = "(" + card.numToDoToday + ")";
+	} else {
+        	document.getElementById("numToDoToday").innerHTML = "";
+	}
 	if (card.id == null) {
 		if (card.laterToday == null) {
-        		text = "<h2>Cards Done For Today!</h2><p>Check Back Tomorrow</h2>";
+			if (card.newAvail) {
+                		text = "<h2>Cards Done For Today!</h2><p>Check Back Tomorrow</h2><p>There are some new cards, but you have reached the limit for new cards today, so you will see them tomorrow.</p>";
+                	} else {
+                		text = "<h2>Cards Done For Today!</h2><p>Check Back Tomorrow</h2>";
+                	}
                 	document.getElementById("flip-button").hidden = true;
                 	document.getElementById("good-button").hidden = true;
                 	document.getElementById("again-button").hidden = true;
