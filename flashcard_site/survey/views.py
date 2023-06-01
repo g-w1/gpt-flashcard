@@ -6,6 +6,7 @@ from django.db.models import Q
 from django.template import loader
 from .forms import InitialSurveyForm, CustomUserCreationForm, LoginForm, CardForm
 import datetime
+from django.utils import timezone
 import json
 import math
 import random
@@ -105,8 +106,8 @@ def get_cards(request):
     cards_for_user = Card.objects.filter(belongs=user)
     # these are the ones that use time_next_today, because they are sensitive to minutes
     lrn_for_today = cards_for_user.filter(
-        date_next__lte=datetime.date.today(),
-        time_next_today__lte=datetime.datetime.today(),
+        date_next__lte=timezone.localdate(),
+        time_next_today__lte=timezone.localtime(),
         queue_type=QUEUE_TYPE_LRN,
     )
     lrn_for_today_card = get_card_from_cards(lrn_for_today)
@@ -114,8 +115,8 @@ def get_cards(request):
         return HttpResponse(lrn_for_today_card, content_type="application/json")
 
     new_failed_for_today = cards_for_user.filter(
-        date_next__lte=datetime.date.today(),
-        time_next_today__lte=datetime.datetime.today(),
+        date_next__lte=timezone.localdate(),
+        time_next_today__lte=timezone.localtime(),
         queue_type=QUEUE_TYPE_NEW_FAILED,
     )
     new_failed_for_today_card = get_card_from_cards(new_failed_for_today)
@@ -123,7 +124,7 @@ def get_cards(request):
         return HttpResponse(new_failed_for_today_card, content_type="application/json")
 
     rev_for_today = cards_for_user.filter(
-        date_next__lte=datetime.date.today(), queue_type=QUEUE_TYPE_REV
+        date_next__lte=timezone.localdate(), queue_type=QUEUE_TYPE_REV
     )
     rev_for_today_card = get_card_from_cards(rev_for_today)
     if rev_for_today_card != None:
@@ -131,7 +132,7 @@ def get_cards(request):
 
     if user.new_cards_added_today < NEW_ADDED_EVERY_DAY:
         new_for_today = cards_for_user.filter(
-            date_next__lte=datetime.date.today(), queue_type=QUEUE_TYPE_NEW
+            date_next__lte=timezone.localdate(), queue_type=QUEUE_TYPE_NEW
         )
         new_for_today_card = get_card_from_cards(new_for_today)
         if new_for_today_card != None:
@@ -140,7 +141,7 @@ def get_cards(request):
     # see if there are any cards left today in a few minutes
     later_today = (
         cards_for_user.filter(
-            date_next=datetime.date.today(), time_next_today__isnull=False
+            date_next=timezone.localdate(), time_next_today__isnull=False
         )
         .exclude(queue_type=QUEUE_TYPE_NEW)
         .order_by("time_next_today")
@@ -155,7 +156,7 @@ def get_cards(request):
         earliest = math.ceil(
             (
                 later_today[0].time_next_today
-                - datetime.datetime.now(datetime.timezone.utc)
+                - timezone.localtime()
             ).total_seconds()
             / 60
         )
@@ -174,9 +175,9 @@ def submit_card(request):
     if not request.POST:
         return error("/submit_card needs a POST request")
     # reset the amount of new cards to 0 if a day (or more) has passed
-    if request.user.last_used != datetime.date.today():
+    if request.user.last_used != timezone.localdate():
         request.user.new_cards_added_today = 0
-        request.user.last_used = datetime.date.today()
+        request.user.last_used = timezone.localdate()
         request.user.save()
     # do the fancy algo
     req = json.loads(request.POST["body"])
@@ -184,7 +185,7 @@ def submit_card(request):
     id = req["id"]
     stat_time_for_card = req["time_for_card"]
     card = Card.objects.filter(
-        id=id, belongs=user, date_next__lte=datetime.date.today()
+        id=id, belongs=user, date_next__lte=timezone.localdate()
     )
     if len(card) != 1:
         return error(
@@ -196,7 +197,7 @@ def submit_card(request):
     # fill in all the fields that we have now
     stat_belongs = request.user
     stat_card = card
-    stat_dtime_now = datetime.datetime.today()
+    stat_dtime_now = timezone.localtime()
     stat_quality = quality
     stat_interval_before = card.interval
     stat_easiness_before = card.easiness
@@ -263,10 +264,10 @@ def submit_card(request):
             card.easiness = 1.3
     elif quality == 4:
         pass  # don't change the easiness
-    review_date = datetime.date.today() + datetime.timedelta(card.interval)
+    review_date = timezone.localdate() + datetime.timedelta(card.interval)
     card.date_next = review_date
     if minutes_next != None:
-        card.time_next_today = datetime.datetime.today() + datetime.timedelta(
+        card.time_next_today = timezone.localtime() + datetime.timedelta(
             minutes=minutes_next
         )
     else:
@@ -410,9 +411,7 @@ def register(request):
             user.time_for_writing = (
                 None if user.experiment_group != EXPERIMENT_GROUP_WRITING else 0
             )
-            user.date_final_opens = datetime.datetime.now(
-                datetime.timezone.utc
-            ) + datetime.timedelta(
+            user.date_final_opens = timezone.localdate() + datetime.timedelta(
                 7 * 4
             )  # TODO make it not 4 weeks
             user.save()

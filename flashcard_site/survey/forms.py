@@ -65,3 +65,7 @@ class CardForm(forms.ModelForm):
     class Meta:
         model = Card
         fields = ["front", "back"]
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["front"].widget = forms.TextInput()
+        self.fields["back"].widget = forms.TextInput()
