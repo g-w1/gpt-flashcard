@@ -110,8 +110,8 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 class Card(models.Model):
     belongs = models.ForeignKey(User, on_delete=models.CASCADE)
-    front = models.CharField(max_length=800)
-    back = models.CharField(max_length=800)
+    front = models.TextField()
+    back = models.TextField()
     date_next = models.DateField(default=datetime.date.today)
     time_next_today = models.DateTimeField(null=True, blank=True, default=None)
     date_next.editable = True
