@@ -355,7 +355,7 @@ def initial_survey_view(request):
             survey.time_taken = int(float(request.POST["time_taken"]))
             survey.save()
             ## TODO redirect to onboarding page
-            redirect("index")
+            return redirect("index")
 
     else:
         form = InitialSurveyForm()
