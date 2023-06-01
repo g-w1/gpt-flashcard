@@ -14,7 +14,8 @@
     }
 </script>
 
-<form method="POST" onsubmit="onSubmitForm()">
+<h1>Take Survey</h1>
+<form method="POST" onsubmit="onSubmitForm()" class="survey-form">
     {% csrf_token %}
     {% if form.non_field_errors %}
         <div class="alert alert-danger">

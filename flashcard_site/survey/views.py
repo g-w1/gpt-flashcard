@@ -1,6 +1,7 @@
 from django.shortcuts import render, HttpResponse, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
+from django.contrib import messages
 from django.db.models import Q
 from django.template import loader
 from .forms import InitialSurveyForm, CustomUserCreationForm, LoginForm, CardForm
@@ -8,6 +9,8 @@ import datetime
 import json
 import math
 import random
+
+from functools import wraps
 
 from .models import (
     Card,
@@ -28,6 +31,32 @@ from .models import (
 )
 
 
+def check_surveys_completed(view_func):
+    @wraps(view_func)
+    def _wrapped_view(request, *args, **kwargs):
+        if request.user.needs_to_take_survey:
+            messages.info(
+                request, "You need to complete the survey before doing flashcards"
+            )
+            return redirect("initial_survey")
+        elif request.user.needs_to_take_initial_assessment:
+            messages.info(
+                request,
+                "You need to complete the initial assessment before doing flashcards",
+            )
+            return redirect("/get_assessment/true")
+        elif request.user.needs_to_take_final_assessment:
+            messages.info(
+                request,
+                "You need to complete the final assessment before doing flashcards",
+            )
+            return redirect("/get_assessment/false")
+        else:
+            return view_func(request, *args, **kwargs)
+
+    return _wrapped_view
+
+
 def error(message):
     s = f'{{"analyzed": false, "error":"{message}"}}'
     return HttpResponse(
@@ -41,6 +70,7 @@ def index(request):
 
 
 @login_required
+@check_surveys_completed
 def review_cards(request):
     if request.user.experiment_group != EXPERIMENT_GROUP_NONE:
         return HttpResponse(
@@ -135,20 +165,6 @@ def get_cards(request):
             ),
             content_type="application/json",
         )
-
-
-# @login_required
-# def add_time(request):
-#     user = request.user
-#     if not request.POST:
-#         return error("/add_time needs a POST request")
-#     req = json.loads(request.POST["body"])
-#     seconds = req["seconds"]
-#     if user.time_for_writing != None:
-#         user.time_for_writing += time
-#     else:
-#         return error("can't have user that does not write cards add time for writing")
-#     user.save()
 
 
 @login_required
@@ -276,35 +292,6 @@ def submit_card(request):
     return HttpResponse('{"analyzed":true}', content_type="application/json")
 
 
-# @login_required
-# def submit_assessment_response(request):
-#     if not request.POST:
-#         return HttpResponse("/submit_assessment_response needs a POST request")
-#     user = request.user
-#     req = json.loads(request.POST["body"])
-#     assessment = Assessment.objects.filter(
-#         id=req["assessment_id"], program=user.program
-#     )
-#     if len(assessment) != 1:
-#         return error(
-#             "a user can only submit an assessment in their program OR the id is invalid"
-#         )
-#     assessment = assessment[0]
-#     supplied_answers = req["supplied_answers"]
-#     # make sure it is valid json
-#     _ = json.loads(supplied_answers)
-#     at_beginning = req["at_beginning"]
-# 
-#     a = AssessmentSubmission(
-#         user_belongs=user,
-#         assessment_belongs=assessment,
-#         supplied_answers=supplied_answers,
-#         at_beginning=req["at_beginning"],
-#     )
-#     a.save()
-#     return HttpResponse('{"analyzed":true}', content_type="application/json")
-# 
-
 # Sees if it is 'true'
 def b(boo):
     return boo == "true" or boo == "True"
@@ -321,11 +308,11 @@ def get_assessment(request, start):
     if AssessmentSubmission.objects.filter(
         user_belongs=user, assessment_belongs=ass, at_beginning=start
     ).exists():
-        return redirect('index')
+        return redirect("index")
 
     if not start:
         if not user.final_assessment_is_due():
-            return redirect('index')
+            return redirect("index")
 
     questions = ass.questions
     correct_answers = json.loads(ass.correct_answers)
@@ -354,12 +341,12 @@ def get_assessment(request, start):
         )
         sub.save()
 
-        return redirect('index')
+        return redirect("index")
 
 
 def initial_survey_view(request):
     if InitialSurvey.objects.filter(user=request.user).exists():
-        return redirect('index')
+        return redirect("index")
     if request.method == "POST":
         form = InitialSurveyForm(request.POST)
         if form.is_valid():
@@ -368,12 +355,13 @@ def initial_survey_view(request):
             survey.time_taken = int(float(request.POST["time_taken"]))
             survey.save()
             ## TODO redirect to onboarding page
-            redirect('index')
+            redirect("index")
 
     else:
         form = InitialSurveyForm()
 
     return render(request, "survey/initial_survey.html", {"form": form})
+
 
 def get_disto_experiment_groups_in_survey_group(survey_group):
     users = User.objects.filter(survey_group=survey_group)
@@ -388,14 +376,18 @@ def get_disto_experiment_groups_in_survey_group(survey_group):
         elif user.experiment_group == EXPERIMENT_GROUP_AI:
             ai += 1
         else:
-            assert False # the experiment group should be one of the three
+            assert False  # the experiment group should be one of the three
         return [none, writing, ai]
+
+
 def get_experiment_group_for_next_user(survey_group):
     distros = get_disto_experiment_groups_in_survey_group(survey_group)
-     # Check if all groups have the same distribution
+    # Check if all groups have the same distribution
     if distros.count(distros[0]) == len(distros):
         # if yes, return a random group
-        return random.choice([EXPERIMENT_GROUP_NONE, EXPERIMENT_GROUP_WRITING, EXPERIMENT_GROUP_AI])
+        return random.choice(
+            [EXPERIMENT_GROUP_NONE, EXPERIMENT_GROUP_WRITING, EXPERIMENT_GROUP_AI]
+        )
     else:
         # if no, return the group with the least distribution
         if distros[0] == min(distros):
@@ -405,14 +397,19 @@ def get_experiment_group_for_next_user(survey_group):
         else:
             return EXPERIMENT_GROUP_AI
 
+
 ### USER STUFF
 def register(request):
     if request.method == "POST":
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
             user = form.save(commit=False)
-            user.experiment_group = get_experiment_group_for_next_user(user.survey_group)
-            user.time_for_writing = None if user.experiment_group != EXPERIMENT_GROUP_WRITING else 0
+            user.experiment_group = get_experiment_group_for_next_user(
+                user.survey_group
+            )
+            user.time_for_writing = (
+                None if user.experiment_group != EXPERIMENT_GROUP_WRITING else 0
+            )
             user.date_final_opens = datetime.datetime.now(
                 datetime.timezone.utc
             ) + datetime.timedelta(
@@ -450,6 +447,7 @@ def logout_view(request):
 
 
 @login_required
+@check_surveys_completed
 def add_card(request):
     if request.user.experiment_group == EXPERIMENT_GROUP_WRITING:
         if request.user.time_for_writing == None:
@@ -470,4 +468,4 @@ def add_card(request):
 
         return render(request, "survey/add_card.html", {"form": form})
     else:
-        return redirect('index')
+        return redirect("index")

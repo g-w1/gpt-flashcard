@@ -105,7 +105,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         return self.final_assessment_is_due() and doesnt_exist
 
     def final_assessment_is_due(self):
-        return user.date_final_opens <= datetime.date.today()
+        return self.date_final_opens <= datetime.date.today()
 
 
 class Card(models.Model):
