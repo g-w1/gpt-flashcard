@@ -107,10 +107,7 @@ def get_cards(request):
     num_cards_to_do_today = user.num_cards_to_do_today
     cards_for_user = Card.objects.filter(belongs=user)
     # these are the ones that use time_next_today, because they are sensitive to minutes
-    lrn_for_today = cards_for_user.filter(
-        date_next__lte=timezone.localdate(),
-        time_next_today__lte=timezone.localtime(),
-        queue_type=QUEUE_TYPE_LRN,
+    lrn_for_today = cards_for_user.filter(Q(date_next__lte=timezone.localdate()) & (Q(time_next_today__lte=timezone.localtime()) | Q(time_next_today__isnull=True)) & Q(queue_type=QUEUE_TYPE_LRN)
     )
     lrn_for_today_card = get_card_from_cards(lrn_for_today, num_cards_to_do_today)
     if lrn_for_today_card != None:
@@ -233,7 +230,7 @@ def submit_card(request):
         if quality > 3:
             card.queue_type = QUEUE_TYPE_LRN
             card.interval = 0
-            minutes_next = 5
+            minutes_next = 3
             card.repetitions = 1
         else:
             card.queue_type = QUEUE_TYPE_NEW_FAILED

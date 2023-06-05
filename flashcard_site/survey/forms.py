@@ -26,6 +26,11 @@ class InitialSurveyForm(forms.ModelForm):
         widget=forms.RadioSelect,  # TODO change the css
         label="Rate your skill at creating flashcards",
     )
+    study_outside = forms.ChoiceField(
+    	choices=InitialSurvey.STUDY_OUTSIDE_CHOICES,
+    	label="How much do you plan to study outside of school (not including this study)?"
+    )
+
 
     class Meta:
         model = InitialSurvey

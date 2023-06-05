@@ -14,7 +14,7 @@ QUEUE_TYPE_LRN = 1
 QUEUE_TYPE_REV = 2
 QUEUE_TYPE_NEW_FAILED = 3  # when you get something as new but you fail it, so we don't remark it as using a new card
 
-NEW_ADDED_EVERY_DAY = 5
+NEW_ADDED_EVERY_DAY = 15
 
 
 class SurveyGroup(models.Model):
@@ -111,6 +111,10 @@ class User(AbstractBaseUser, PermissionsMixin):
         possible_new_cards_num = min(new_cards_num, NEW_ADDED_EVERY_DAY - self.new_cards_added_today)
         return cards_for_today.count() - new_cards_num + possible_new_cards_num
 
+    @property
+    def num_cards_to_add_today(self):
+        return NEW_ADDED_EVERY_DAY - Card.objects.filter(created=timezone.localdate(), belongs=self).count()
+
     def final_assessment_is_due(self):
         return self.date_final_opens <= timezone.localdate()
 
@@ -130,6 +134,7 @@ class Card(models.Model):
         default=0
     )  # Initially, the card has not been reviewed, so repetitions is 0
     queue_type = models.IntegerField(default=QUEUE_TYPE_NEW)
+    created = models.DateField(auto_now_add=True) # why not showing up in admin
 
     def __str__(self):
         return f"{self.front}/{self.back}/next: {self.date_next}"
@@ -195,12 +200,19 @@ class InitialSurvey(models.Model):
         ("yes", "Yes"),
         ("no", "No"),
     ]
+    STUDY_OUTSIDE_CHOICES = [
+        ("nothing", "No studying outside school"),
+        ("minimal", "Studying for less than 30 minutes outside of school"),
+        ("medium", "Studying for more than 30 minutes but less than an hour outside of school"),
+        ("large", "Studying for more than an hour outside of school")
+    ]
     LIKERT_SCALE_CHOICES = [(i, i) for i in range(1, 6)]
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     age = models.PositiveIntegerField()
     occupation = models.CharField(max_length=20, choices=OCCUPATION_CHOICES)
     used_flashcards = models.CharField(max_length=3, choices=YES_NO_CHOICES)
+    study_outside = models.CharField(max_length=100, choices=STUDY_OUTSIDE_CHOICES, default="nothing")
     use_flashcards_normally = models.CharField(
         max_length=3, choices=YES_NO_CHOICES, blank=True, null=True
     )

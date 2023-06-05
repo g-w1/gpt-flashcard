@@ -36,6 +36,9 @@ function renderCard() {
                 	document.getElementById("flip-button").hidden = true;
                 	document.getElementById("good-button").hidden = true;
                 	document.getElementById("again-button").hidden = true;
+                        setTimeout(function() {
+                            location.reload();
+                        }, 30000);
         	}
 	} else if (flipped) {
         	text = "" + card.front + "<hr/>" + card.back;

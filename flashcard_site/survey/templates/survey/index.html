@@ -19,7 +19,10 @@
         </p>
 {% elif user.experiment_group == 1 %} <!-- The writing group -->
         Hello, in this survey, your job is to write flashcards for your subject, and review them daily. You can write them with <a href="{% url 'add_card' %}">Add Card</a> and review them with <a href="{% url 'review_cards' %}">Review Cards</a>.<br>
-        <p>The system will automatically schedule the flashcards, so all you have to do is to write the flashcards, and then review them until there are now more reviews left</p>
+        {% if user.num_cards_to_add_today != 0 %}
+            <p>Please add <span style="font-size: 30px; font-weight: bold">{{user.num_cards_to_add_today}} cards</span> today about what you are learning</p>
+        {% endif %}
+        <p>The system will automatically schedule the flashcards, so all you have to do is to write the flashcards, and then review them until there are no more reviews left</p>
         <p>
         {% if not user.needs_to_take_final_assessment %}
             We will email you at <b>{{ user.email }}</b> when you need to take the final assessment.<br>
