@@ -35,25 +35,27 @@ from .models import (
 def check_surveys_completed(view_func):
     @wraps(view_func)
     def _wrapped_view(request, *args, **kwargs):
-        if request.user.needs_to_take_survey:
-            messages.info(
-                request, "You need to complete the survey before doing flashcards"
-            )
-            return redirect("initial_survey")
-        elif request.user.needs_to_take_initial_assessment:
-            messages.info(
-                request,
-                "You need to complete the initial assessment before doing flashcards",
-            )
-            return redirect("/get_assessment/true")
-        elif request.user.needs_to_take_final_assessment:
-            messages.info(
-                request,
-                "You need to complete the final assessment before doing flashcards",
-            )
-            return redirect("/get_assessment/false")
-        else:
-            return view_func(request, *args, **kwargs)
+        if request.user:
+            if request.user.needs_to_take_survey:
+                messages.info(
+                    request,
+                    "You need to complete the survey before doing anything else",
+                )
+                return redirect("initial_survey")
+            elif request.user.needs_to_take_initial_assessment:
+                messages.info(
+                    request,
+                    "You need to complete the initial assessment before doing anything else",
+                )
+                return redirect("/get_assessment/true")
+            elif request.user.needs_to_take_final_assessment:
+                messages.info(
+                    request,
+                    "You need to complete the final assessment before doing anything else",
+                )
+                return redirect("/get_assessment/false")
+            else:
+                return view_func(request, *args, **kwargs)
 
     return _wrapped_view
 
@@ -66,6 +68,7 @@ def error(message):
     )
 
 
+@check_surveys_completed
 def index(request):
     return render(request, "survey/index.html")
 
@@ -94,7 +97,7 @@ def get_card_from_cards(cards, num_cards_to_do_today):
                 "front": front,
                 "back": back,
                 "queue_type": queue_type,
-                "numToDoToday": num_cards_to_do_today
+                "numToDoToday": num_cards_to_do_today,
             }
         )
     else:
@@ -107,7 +110,13 @@ def get_cards(request):
     num_cards_to_do_today = user.num_cards_to_do_today
     cards_for_user = Card.objects.filter(belongs=user)
     # these are the ones that use time_next_today, because they are sensitive to minutes
-    lrn_for_today = cards_for_user.filter(Q(date_next__lte=timezone.localdate()) & (Q(time_next_today__lte=timezone.localtime()) | Q(time_next_today__isnull=True)) & Q(queue_type=QUEUE_TYPE_LRN)
+    lrn_for_today = cards_for_user.filter(
+        Q(date_next__lte=timezone.localdate())
+        & (
+            Q(time_next_today__lte=timezone.localtime())
+            | Q(time_next_today__isnull=True)
+        )
+        & Q(queue_type=QUEUE_TYPE_LRN)
     )
     lrn_for_today_card = get_card_from_cards(lrn_for_today, num_cards_to_do_today)
     if lrn_for_today_card != None:
@@ -118,7 +127,9 @@ def get_cards(request):
         time_next_today__lte=timezone.localtime(),
         queue_type=QUEUE_TYPE_NEW_FAILED,
     )
-    new_failed_for_today_card = get_card_from_cards(new_failed_for_today, num_cards_to_do_today)
+    new_failed_for_today_card = get_card_from_cards(
+        new_failed_for_today, num_cards_to_do_today
+    )
     if new_failed_for_today_card != None:
         return HttpResponse(new_failed_for_today_card, content_type="application/json")
 
@@ -153,12 +164,25 @@ def get_cards(request):
         ).count()
         if num_new_for_today == 0:
             return HttpResponse(
-                json.dumps({"id": None, "laterToday": None, "numToDoToday": num_cards_to_do_today}),
+                json.dumps(
+                    {
+                        "id": None,
+                        "laterToday": None,
+                        "numToDoToday": num_cards_to_do_today,
+                    }
+                ),
                 content_type="application/json",
             )
         else:
             return HttpResponse(
-                json.dumps({"id": None, "laterToday": None, "newAvail": True, "numToDoToday": num_cards_to_do_today}),
+                json.dumps(
+                    {
+                        "id": None,
+                        "laterToday": None,
+                        "newAvail": True,
+                        "numToDoToday": num_cards_to_do_today,
+                    }
+                ),
                 content_type="application/json",
             )
 
@@ -169,7 +193,14 @@ def get_cards(request):
         )
         return HttpResponse(
             json.dumps(
-                {"id": None, "laterToday": {"amount": amount, "earliest_min": earliest, }, "numToDoToday": num_cards_to_do_today}
+                {
+                    "id": None,
+                    "laterToday": {
+                        "amount": amount,
+                        "earliest_min": earliest,
+                    },
+                    "numToDoToday": num_cards_to_do_today,
+                }
             ),
             content_type="application/json",
         )
