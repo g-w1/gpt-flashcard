@@ -128,3 +128,7 @@ STATIC_URL = "static/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 AUTH_USER_MODEL = "survey.User"
+
+EMAIL_BACKEND = 'django_ses.SESBackend'
+
+USE_SES_V2 = True
