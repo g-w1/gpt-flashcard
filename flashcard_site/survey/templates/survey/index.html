@@ -3,22 +3,8 @@
 <h1>Flashcard Survey</h1>
 
 {% if user.is_authenticated %}
-{% if user.experiment_group == 0 %} <!-- They only take the surveys, the control group -->
-        Hello, your only job in this survey is to take an assessment at the beginning and end, and take a survey.<br>
-        <p>
-        {% if not user.needs_to_take_final_assessment %}
-            We will email you at <b>{{ user.email }}</b> when you need to take the final assessment.<br>
-        {% endif %}
-        {% if user.needs_to_take_initial_assessment and user.needs_to_take_survey %}
-            For now, take the initial survey and assessment in the top bar.
-        {% elif user.needs_to_take_survey %}
-            For now, take the initial survey in the top bar.
-        {% elif user.needs_to_take_initial_assessment %}
-            For now, take the initial survey in the top bar.
-        {% endif %}
-        </p>
-{% elif user.experiment_group == 1 %} <!-- The writing group -->
-        Hello, in this survey, your job is to write flashcards for your subject, and review them daily. You can write them with <a href="{% url 'add_card' %}">Add Card</a> and review them with <a href="{% url 'review_cards' %}">Review Cards</a>.<br>
+{% if user.experiment_group == 1 %} <!-- The writing group -->
+        Hello, in this study, your job is to write flashcards for your subject, and review them daily. You can write them with <a href="{% url 'add_card' %}">Add Card</a> and review them with <a href="{% url 'review_cards' %}">Review Cards</a>.<br>
         {% if user.num_cards_to_add_today != 0 %}
             <p>Please add <span style="font-size: 30px; font-weight: bold">{{user.num_cards_to_add_today}} cards</span> today about what you are learning</p>
         {% endif %}

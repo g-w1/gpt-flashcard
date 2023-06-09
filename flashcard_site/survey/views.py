@@ -26,7 +26,6 @@ from .models import (
     QUEUE_TYPE_LRN,
     QUEUE_TYPE_REV,
     NEW_ADDED_EVERY_DAY,
-    EXPERIMENT_GROUP_NONE,
     EXPERIMENT_GROUP_WRITING,
     EXPERIMENT_GROUP_AI,
 )
@@ -76,12 +75,7 @@ def index(request):
 @login_required
 @check_surveys_completed
 def review_cards(request):
-    if request.user.experiment_group != EXPERIMENT_GROUP_NONE:
-        return HttpResponse(
-            loader.get_template("survey/review_cards.html").render({}, request)
-        )
-    else:
-        return redirect("index")
+    HttpResponse(loader.get_template("survey/review_cards.html").render({}, request))
 
 
 def get_card_from_cards(cards, num_cards_to_do_today):
@@ -402,19 +396,16 @@ def initial_survey_view(request):
 
 def get_disto_experiment_groups_in_survey_group(survey_group):
     users = User.objects.filter(survey_group=survey_group)
-    none = 0
     writing = 0
     ai = 0
     for user in users:
-        if user.experiment_group == EXPERIMENT_GROUP_NONE:
-            none += 1
-        elif user.experiment_group == EXPERIMENT_GROUP_WRITING:
+        if user.experiment_group == EXPERIMENT_GROUP_WRITING:
             writing += 1
         elif user.experiment_group == EXPERIMENT_GROUP_AI:
             ai += 1
         else:
             assert False  # the experiment group should be one of the three
-        return [none, writing, ai]
+        return [writing, ai]
 
 
 def get_experiment_group_for_next_user(survey_group):
@@ -422,14 +413,10 @@ def get_experiment_group_for_next_user(survey_group):
     # Check if all groups have the same distribution
     if distros.count(distros[0]) == len(distros):
         # if yes, return a random group
-        return random.choice(
-            [EXPERIMENT_GROUP_NONE, EXPERIMENT_GROUP_WRITING, EXPERIMENT_GROUP_AI]
-        )
+        return random.choice([EXPERIMENT_GROUP_WRITING, EXPERIMENT_GROUP_AI])
     else:
         # if no, return the group with the least distribution
         if distros[0] == min(distros):
-            return EXPERIMENT_GROUP_NONE
-        elif distros[1] == min(distros):
             return EXPERIMENT_GROUP_WRITING
         else:
             return EXPERIMENT_GROUP_AI

@@ -34,9 +34,7 @@ class UserManager(BaseUserManager):
 
         email = self.normalize_email(email)
         user = self.model(email=email, **extra_fields)
-        user.time_for_writing = (
-            None  # TODO randomly assign to a control group that actually can write
-        )
+        user.time_for_writing = None
         user.date_final_opens = timezone.localdate() + datetime.timedelta(
             7 * 4
         )  # TODO make it not 4 weeks
@@ -61,7 +59,6 @@ class UserManager(BaseUserManager):
         return user
 
 
-EXPERIMENT_GROUP_NONE = 0
 EXPERIMENT_GROUP_WRITING = 1
 EXPERIMENT_GROUP_AI = 2
 
@@ -70,7 +67,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(max_length=255, unique=True)
     new_cards_added_today = models.IntegerField(default=0)
     survey_group = models.ForeignKey(SurveyGroup, on_delete=models.CASCADE)
-    experiment_group = models.IntegerField(default=EXPERIMENT_GROUP_NONE)
+    experiment_group = models.IntegerField()
     last_used = models.DateField(default=timezone.localtime)
     date_joined = models.DateTimeField(auto_now_add=True)
     time_for_writing = models.IntegerField(null=True, blank=True)
@@ -106,14 +103,26 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     @property
     def num_cards_to_do_today(self):
-        cards_for_today = Card.objects.filter(Q(belongs=self) & Q(date_next__lte=timezone.localtime()) & (Q(time_next_today__lte=timezone.localtime()) | Q(time_next_today__isnull=True)))
+        cards_for_today = Card.objects.filter(
+            Q(belongs=self)
+            & Q(date_next__lte=timezone.localtime())
+            & (
+                Q(time_next_today__lte=timezone.localtime())
+                | Q(time_next_today__isnull=True)
+            )
+        )
         new_cards_num = cards_for_today.filter(queue_type=QUEUE_TYPE_NEW).count()
-        possible_new_cards_num = min(new_cards_num, NEW_ADDED_EVERY_DAY - self.new_cards_added_today)
+        possible_new_cards_num = min(
+            new_cards_num, NEW_ADDED_EVERY_DAY - self.new_cards_added_today
+        )
         return cards_for_today.count() - new_cards_num + possible_new_cards_num
 
     @property
     def num_cards_to_add_today(self):
-        return NEW_ADDED_EVERY_DAY - Card.objects.filter(created=timezone.localdate(), belongs=self).count()
+        return (
+            NEW_ADDED_EVERY_DAY
+            - Card.objects.filter(created=timezone.localdate(), belongs=self).count()
+        )
 
     def final_assessment_is_due(self):
         return self.date_final_opens <= timezone.localdate()
@@ -134,7 +143,7 @@ class Card(models.Model):
         default=0
     )  # Initially, the card has not been reviewed, so repetitions is 0
     queue_type = models.IntegerField(default=QUEUE_TYPE_NEW)
-    created = models.DateField(auto_now_add=True) # why not showing up in admin
+    created = models.DateField(auto_now_add=True)  # why not showing up in admin
 
     def __str__(self):
         return f"{self.front}/{self.back}/next: {self.date_next}"
@@ -203,8 +212,11 @@ class InitialSurvey(models.Model):
     STUDY_OUTSIDE_CHOICES = [
         ("nothing", "No studying outside school"),
         ("minimal", "Studying for less than 30 minutes outside of school"),
-        ("medium", "Studying for more than 30 minutes but less than an hour outside of school"),
-        ("large", "Studying for more than an hour outside of school")
+        (
+            "medium",
+            "Studying for more than 30 minutes but less than an hour outside of school",
+        ),
+        ("large", "Studying for more than an hour outside of school"),
     ]
     LIKERT_SCALE_CHOICES = [(i, i) for i in range(1, 6)]
 
@@ -212,7 +224,9 @@ class InitialSurvey(models.Model):
     age = models.PositiveIntegerField()
     occupation = models.CharField(max_length=20, choices=OCCUPATION_CHOICES)
     used_flashcards = models.CharField(max_length=3, choices=YES_NO_CHOICES)
-    study_outside = models.CharField(max_length=100, choices=STUDY_OUTSIDE_CHOICES, default="nothing")
+    study_outside = models.CharField(
+        max_length=100, choices=STUDY_OUTSIDE_CHOICES, default="nothing"
+    )
     use_flashcards_normally = models.CharField(
         max_length=3, choices=YES_NO_CHOICES, blank=True, null=True
     )

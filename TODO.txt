@@ -14,8 +14,6 @@ User Inteface:
 
 * tell people what group they are in
 
-* don't include a control group. Only a writing group and an AI group. as soon as possible tell them which group they are in
-
 survey/registration
 * title the informed consent form
 * hours outside of school per week <30m, 1-2, etc
