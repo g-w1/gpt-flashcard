@@ -3,7 +3,6 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.db.models import Q
-from django.template import loader
 from .forms import InitialSurveyForm, CustomUserCreationForm, LoginForm, CardForm
 import datetime
 from django.utils import timezone
@@ -75,7 +74,7 @@ def index(request):
 @login_required
 @check_surveys_completed
 def review_cards(request):
-    HttpResponse(loader.get_template("survey/review_cards.html").render({}, request))
+    return render(request, "survey/review_cards.html", {})
 
 
 def get_card_from_cards(cards, num_cards_to_do_today):
@@ -349,11 +348,7 @@ def get_assessment(request, start):
     correct_answers = json.loads(ass.correct_answers)
 
     if not request.POST:
-        return HttpResponse(
-            loader.get_template("survey/assess.html").render(
-                {"questions": questions}, request
-            )
-        )
+        return render(request, "survey/assess.html", {"questions": questions})
     else:
         # we are submitting it
         req = json.loads(request.POST["body"])

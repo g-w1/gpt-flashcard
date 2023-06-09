@@ -16,6 +16,29 @@
 
 <h2>New Card</h2>
 
+<details>
+    <summary>How do I make good cards?</summary>
+    <ul>
+        <li><b>Make every card have <b>one</b> piece of information on it:</b></li>
+        You can split multiple pieces of information into different cards.
+        Bad example: <i>Front: </i>What was the Manhattan Project?/<br><i>Back: </i>The World War II undertaking that
+        developed the world's first nuclear weapon
+        <br>
+        Better example: What war was the Manhattan Project in?/WWII
+        What did the Manhattan Project try to develop?/A nuclear bomb
+
+        <b><li>For more complicated info, blank out words:</li></b>
+        This can help you extract more flashcards from a single sentence. ex:<br>
+        <i>Front</i>: The first humans walked on the moon in ____/<i>Back</i>: 1969<br>
+        <i>Front</i>: The first humans walked on the ____ in 1969/<i>Back</i>: moon
+
+        <b><li>Avoid Lists:</li></b>
+        Instead of memorizing a list, try to memorize the elements in the list.<br>
+		Ex: instead of "List all the stages of mitosis", ask "What is the first stage of mitosis?", "What is the second stage of mitotis?, etc
+    </ul>
+</details>
+<br>
+
 <form method="POST" onsubmit="onSubmitForm()">
     {% csrf_token %}
     {% if form.non_field_errors %}

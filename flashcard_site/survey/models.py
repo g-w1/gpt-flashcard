@@ -210,25 +210,30 @@ class InitialSurvey(models.Model):
         ("no", "No"),
     ]
     STUDY_OUTSIDE_CHOICES = [
-        ("nothing", "No studying outside school"),
-        ("minimal", "Studying for less than 30 minutes outside of school"),
+        ("<30m", "Studying for less than 30 minutes outside of school every week"),
         (
-            "medium",
-            "Studying for more than 30 minutes but less than an hour outside of school",
+            "1-2h",
+            "Studying for 1-2 hours outside of school every week",
         ),
-        ("large", "Studying for more than an hour outside of school"),
+        ("3-4", "Studying for 3-4 hours outside of school every week"),
+        ("5", "Studying for more than 5 hours outside of school every week"),
     ]
-    LIKERT_SCALE_CHOICES = [(i, i) for i in range(1, 6)]
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     age = models.PositiveIntegerField()
     occupation = models.CharField(max_length=20, choices=OCCUPATION_CHOICES)
     used_flashcards = models.CharField(max_length=3, choices=YES_NO_CHOICES)
     study_outside = models.CharField(
-        max_length=100, choices=STUDY_OUTSIDE_CHOICES, default="nothing"
+        max_length=100, choices=STUDY_OUTSIDE_CHOICES, default="<30m"
     )
-    use_flashcards_normally = models.CharField(
-        max_length=3, choices=YES_NO_CHOICES, blank=True, null=True
+    HOW_MANY_TIMES_CHOICES = [
+        ("0", "0"),
+        ("1-2", "1-2"),
+        ("3-5", "3-5"),
+        ("5-10", "5-10"),
+        ("more than 10", "more than 10"),
+    ]
+    how_many_times_used_flashcards = models.CharField(
+        max_length=100, choices=HOW_MANY_TIMES_CHOICES, default="3-5"
     )
-    flashcard_skill = models.IntegerField(choices=LIKERT_SCALE_CHOICES)
     time_taken = models.PositiveIntegerField()

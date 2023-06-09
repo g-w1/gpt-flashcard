@@ -2,9 +2,13 @@
 {% load static %}
 {% block content %}
 <script src="{% static 'survey/timeme.min.js' %}" /></script>
-<h1>Take An Assessment</h1>
+<h1>Take A Check In</h1>
+
+<h3>This is not graded.</br>Your teacher will not see your responses.<br/>It just gives a chance to compare your knowledge before and after doing the flashcards. Please answer as truthfully as possible.</h3>
 
 <form id="ass">
+    <div id="ass-qs">
+    </div>
     <button type="button" onclick="submitForm()">Submit</button>
 </form>
 
@@ -18,14 +22,15 @@
         for (let i = 0; i < choices.length; i++) {
             s += `<input type="radio" name="question${questionIndex}" value="${i}">${choices[i]}</input>`;
         }
+        s += `<input type="radio" name="question${questionIndex}" value="${choices.length}">I don't know</input>`;
         return s;
     }
 
     function genQuestion(question, choices, questionIndex) {
         return `
-        <hr/>
         <p>${question}</p>
         ${generateRadio(choices, questionIndex)}
+        <hr/>
         `;
     }
 
@@ -80,7 +85,7 @@
     });
 
     const questions = JSON.parse(document.getElementById("questions").innerHTML);
-    let ass = document.getElementById("ass");
+    let ass = document.getElementById("ass-qs");
     for (let i = 0; i < questions.length; i++) {
         let q = questions[i];
         ass.innerHTML += genQuestion(q.question, q.answers, i);

@@ -22,7 +22,7 @@
         {% endif %}
         </p>
 {% elif user.experiment_group == 2 %} <!-- The AI group -->
-        Hello, in this survey, your job is to review flashcards for your subject daily. We have provided the flashcards, so you can get review them with <a href="{% url 'review_cards' %}">Review Cards</a> or in the top bar.<br>
+        Hello, in this study, your job is to review flashcards for your subject daily. We have provided the flashcards, so you can get review them with <a href="{% url 'review_cards' %}">Review Cards</a> or in the top bar.<br>
         <p>We have provided the flashcards, so all you have to do is review them daily. Every day please review them until there are no more flashcards left. This will help you learn the subject.</p>
         <p>
         {% if not user.needs_to_take_final_assessment %}

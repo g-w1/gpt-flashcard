@@ -4,8 +4,9 @@
   <form method="post">
   {% csrf_token %}
     {{ form.as_p }}
-  <div id="informed-consent" style="text-align: left;"> <!-- TODO do I need to actually collect the signature -->
-<br><b>Student Researcher(s):</b> Jacob Goldman-Wetzler
+  <div id="informed-consent" style="text-align: left;">
+<h1>Informed Consent Form</h1>
+<b>Student Researcher(s):</b> Jacob Goldman-Wetzler
 <br><b>Title of Project:</b> Using Large Language Models to Enhance Spaced Repetition Learning
 <br><b>You are being asked to volunteer to participate in this science project.</b> If you would like to participate, please check in the appropriate area below.
 <br><b>Purpose of the project:</b> The purpose of this study is to evaluate if Large Language Models can replace humans in creating good flashcards for use in spaced repetition learning.
@@ -17,10 +18,14 @@
 <br><b>If you have any questions about this study, feel free to contact:</b>
 <br><b>Adult Sponsor/QS/DS:</b> Melissa Shandroff, shandroffm@hohschools.org
 <br><b>Voluntary Participation:</b> Participation in this study is completely voluntary. There will be no negative consequences if you decide not to participate, stop participating, or refuse to answer any question.
-<br><b>By checking this box, I am giving my consent to participate in this study.</b>
+<br>
+<br>
+<div style="background: yellow;">
+<b>By checking this box, I am giving my consent to participate in this study.</b>
 <br><b>Participant Consent:</b> <input type="checkbox" required></input>
 <br><b>By checking this box, I am giving my consent for my child to participate in this study.</b>
 <br><b>Parental Consent:</b> <input type="checkbox" required></input>
+</div>
 
   </div>
     <button type="submit">Register</button>
