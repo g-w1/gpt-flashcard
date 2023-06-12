@@ -33,7 +33,7 @@ from .models import (
 def check_surveys_completed(view_func):
     @wraps(view_func)
     def _wrapped_view(request, *args, **kwargs):
-        if request.user:
+        if request.user.is_authenticated:
             if request.user.needs_to_take_survey:
                 messages.info(
                     request,
@@ -52,8 +52,8 @@ def check_surveys_completed(view_func):
                     "You need to complete the final assessment before doing anything else",
                 )
                 return redirect("/get_assessment/false")
-            else:
-                return view_func(request, *args, **kwargs)
+        else:
+            return view_func(request, *args, **kwargs)
 
     return _wrapped_view
 
