@@ -19,6 +19,13 @@ NEW_ADDED_EVERY_DAY = 15
 
 class SurveyGroup(models.Model):
     name = models.CharField(max_length=100)
+    cards_per_week = models.PositiveIntegerField(default=45)
+    topics_to_make = models.TextField()  # json array of 5 arrays of strings
+
+    def get_topic_to_make(self, days_passed):
+        topics_parsed = json.loads(self.topics_to_make)
+        week = days_passed // 7
+        return topics_parsed[week]
 
     def __str__(self):
         return self.name
@@ -127,6 +134,11 @@ class User(AbstractBaseUser, PermissionsMixin):
     def final_assessment_is_due(self):
         return self.date_final_opens <= timezone.localdate()
 
+    @property
+    def topics_to_make(self):
+        days_passed = (timezone.localtime() - self.date_joined).days
+        return self.survey_group.get_topic_to_make(days_passed)
+
 
 class Card(models.Model):
     belongs = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -176,12 +188,14 @@ class Assessment(models.Model):
     survey_group = models.ForeignKey(
         SurveyGroup, on_delete=models.CASCADE
     )  # the school that the people belong to, we use this when fetching the assessment
-    questions = (
+    questions_start = (
         models.TextField()
     )  # this is just some json array schema like this [{"question": "What is your favorite color?", "answers": ["Red", "Blue", "Green"]}, ...]
-    correct_answers = (
+    correct_answers_start = (
         models.TextField()
     )  # an array with the correct indexes [2, ...] means green is fav color
+    questions_end = models.TextField()
+    correct_answers_end = models.TextField()
 
 
 class AssessmentSubmission(models.Model):

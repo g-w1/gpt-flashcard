@@ -68,6 +68,15 @@ function load_card() {
 		renderCard()
 	});
 }
+function pauseTimer() {
+	TimeMe.stopTimer("card-" + card.id);
+}
+function unpauseTimer() {
+	TimeMe.startTimer("card-" + card.id);
+}
+function getTime() {
+    return TimeMe.getTimeOnPageInSeconds("card-" + card.id);
+}
 function submit() {
 	if (quality == null) {
 		console.log("tried to submit without setting quality first");
@@ -75,7 +84,7 @@ function submit() {
 	}
 	let data = new URLSearchParams();
 	TimeMe.stopTimer("card-" + card.id);
-	const time_for_card = TimeMe.getTimeOnPageInSeconds("card-" + card.id);
+	const time_for_card = getTime();
 	data.append("body", JSON.stringify({id: card.id, quality: quality, time_for_card: time_for_card}));
 	fetch("/submit_card", {
 		method: 'post',
@@ -93,6 +102,7 @@ TimeMe.initialize({
 	idleTimeoutInSecond: 45,
 });
 load_card();
+setTimeout(() => { document.getElementById("time").innerHTML:
 </script>
 <h1>Review Cards!</h1>
 
@@ -101,4 +111,9 @@ load_card();
 <button id="flip-button" onclick="flipped=true; renderCard();" hidden="true">Flip</button>
 <button id="again-button" onclick="quality=1; submit()" hidden="true">Again</button>
 <button id="good-button" onclick="quality=4; submit()" hidden="true">Remembered</button>
+
+<div id="timer-div">
+        <p id="time">00:00</p>
+        <img id="pause-timer" src="{% static 'survey/pause-button.svg' %}" alt="pause button" width=40 onclick="pauseTimer()"></img>
+</div>
 {% endblock %}

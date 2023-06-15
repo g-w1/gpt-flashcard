@@ -52,6 +52,8 @@ def check_surveys_completed(view_func):
                     "You need to complete the final assessment before doing anything else",
                 )
                 return redirect("/get_assessment/false")
+            else:
+                return view_func(request, *args, **kwargs)
         else:
             return view_func(request, *args, **kwargs)
 
@@ -483,6 +485,10 @@ def add_card(request):
         else:
             form = CardForm()
 
-        return render(request, "survey/add_card.html", {"form": form})
+        return render(
+            request,
+            "survey/add_card.html",
+            {"form": form, "topics": request.user.topics_to_make},
+        )
     else:
         return redirect("index")
