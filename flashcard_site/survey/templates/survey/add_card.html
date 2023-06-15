@@ -39,6 +39,15 @@
 </details>
 <br>
 
+<details open>
+    <summary>What should I write flashcards on?</summary>
+    <ul>
+        {% for topic in topics %}
+        	<li>{{topic}}</li>
+        {% endfor %}
+    </ul>
+</details>
+
 <form method="POST" onsubmit="onSubmitForm()">
     {% csrf_token %}
     {% if form.non_field_errors %}

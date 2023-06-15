@@ -483,6 +483,10 @@ def add_card(request):
         else:
             form = CardForm()
 
-        return render(request, "survey/add_card.html", {"form": form})
+        return render(
+            request,
+            "survey/add_card.html",
+            {"form": form, "topics": request.user.topics_to_make},
+        )
     else:
         return redirect("index")

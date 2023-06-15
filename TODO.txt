@@ -1,5 +1,6 @@
 * AI
 	* Give the previous paragraph as context for the AI or give the general topic in addition to the text to generate flashcards on.
+	* 16k
 something like this for the prompt:
 
 Need to publish what algo I use to generate the cards
@@ -13,12 +14,6 @@ User Inteface:
 * should shephard people through the process
 
 * tell people what group they are in
-
-survey/registration
-* title the informed consent form
-* bold the by checking this form you consent
-* make the survey group in the registration a code
-
 
 Assessment:
 * make a different assessment for the beginning and end
