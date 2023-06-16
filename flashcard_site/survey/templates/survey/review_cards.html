@@ -22,6 +22,7 @@ function renderCard() {
         	document.getElementById("numToDoToday").innerHTML = "";
 	}
 	if (card.id == null) {
+		document.getElementById("timer-div").hidden = true;
 		if (card.laterToday == null) {
 			if (card.newAvail) {
                 		text = "<h2>Cards Done For Today!</h2><p>Check Back Tomorrow</h2><p>There are some new cards, but you have reached the limit for new cards today, so you will see them tomorrow.</p>";
@@ -68,6 +69,10 @@ function load_card() {
 		renderCard()
 	});
 }
+function getTime() {
+    const a = TimeMe.getTimeOnPageInSeconds("card-" + card.id);
+    return a;
+}
 function submit() {
 	if (quality == null) {
 		console.log("tried to submit without setting quality first");
@@ -75,7 +80,7 @@ function submit() {
 	}
 	let data = new URLSearchParams();
 	TimeMe.stopTimer("card-" + card.id);
-	const time_for_card = TimeMe.getTimeOnPageInSeconds("card-" + card.id);
+	const time_for_card = getTime();
 	data.append("body", JSON.stringify({id: card.id, quality: quality, time_for_card: time_for_card}));
 	fetch("/submit_card", {
 		method: 'post',
@@ -88,11 +93,36 @@ function submit() {
 	.then((response) => response.json())
 	.then((j) => {console.log(j); load_card()});
 }
+let isPaused = false;
+function pauseTimer() {
+	TimeMe.stopTimer("card-" + card.id);
+	const button = document.getElementById("pause-timer");
+	button.removeEventListener("click", pauseTimer);
+	button.addEventListener("click", unpauseTimer);
+	button.src = "{% static 'survey/play-button.svg' %}";
+	isPaused = true;
+}
+function unpauseTimer() {
+	TimeMe.startTimer("card-" + card.id);
+	const button = document.getElementById("pause-timer");
+	button.removeEventListener("click", unpauseTimer);
+	button.addEventListener("click", pauseTimer);
+	button.src = "{% static 'survey/pause-button.svg' %}";
+	isPaused = false;
+}
 TimeMe.initialize({
 	currentPageName: "review-page",
-	idleTimeoutInSecond: 45,
+	idleTimeoutInSecond: 30,
 });
 load_card();
+function uptime() {
+    const t = Math.round(getTime());
+    console.log(t);
+    document.getElementById("time").textContent = t;
+}
+setInterval(uptime, 1000);
+window.onload = () => {document.getElementById("pause-timer").addEventListener("click", pauseTimer);}
+TimeMe.callWhenUserReturns(unpauseTimer);
 </script>
 <h1>Review Cards!</h1>
 
@@ -101,4 +131,9 @@ load_card();
 <button id="flip-button" onclick="flipped=true; renderCard();" hidden="true">Flip</button>
 <button id="again-button" onclick="quality=1; submit()" hidden="true">Again</button>
 <button id="good-button" onclick="quality=4; submit()" hidden="true">Remembered</button>
+
+<div id="timer-div">
+        <p id="time">0</p>
+        <img id="pause-timer" src="{% static 'survey/pause-button.svg' %}" alt="pause button" width=40></img>
+</div>
 {% endblock %}

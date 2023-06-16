@@ -52,6 +52,8 @@ def check_surveys_completed(view_func):
                     "You need to complete the final assessment before doing anything else",
                 )
                 return redirect("/get_assessment/false")
+            else:
+                return view_func(request, *args, **kwargs)
         else:
             return view_func(request, *args, **kwargs)
 
