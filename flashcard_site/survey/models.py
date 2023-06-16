@@ -23,7 +23,7 @@ class SurveyGroup(models.Model):
     topics_to_make = models.TextField()  # json array of 5 arrays of strings
 
     def get_topic_to_make(self, days_passed):
-        topics_parsed = json.parse(self.topics_to_make)
+        topics_parsed = json.loads(self.topics_to_make)
         week = days_passed // 7
         return topics_parsed[week]
 
@@ -136,7 +136,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     @property
     def topics_to_make(self):
-        days_passed = (timezone.localdate() - date_joined).days
+        days_passed = (timezone.localtime() - self.date_joined).days
         return self.survey_group.get_topic_to_make(days_passed)
 
 

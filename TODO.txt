@@ -16,13 +16,10 @@ User Inteface:
 * tell people what group they are in
 
 Assessment:
-* make a different assessment for the beginning and end
 * Find a better name than check in to call it
 
 Card Creation:
-* give them the material to create the cards on
-	* bulletted list from the textbook to create the cards on
-* only do it once at the beginning of the week
+* only 40 cards per week
 
 Reviewing Cards:
 * add timer to page, allow people to pause (for this I can just have an element that shows the current time and a button to turn on or off it)

@@ -172,3 +172,32 @@ details[open] summary {
 ul {
     list-style-position: inside;
 }
+/* timer */
+#timer-div {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    padding: 10px;
+    background-color: #f8f9fa;  /* Light gray background */
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);  /* Slight shadow for depth */
+}
+
+#time {
+    font-size: 1.5em;
+    margin-bottom: 10px;
+}
+
+#pause-timer {
+    padding: 10px;
+    font-size: 1em;
+    background-color: white;  /* Blue background */
+    border: none;
+    border-radius: 40px;
+    cursor: pointer;
+}
+
+#pause-timer:hover {
+    background-color: #0086d3;  /* Darker blue on hover */
+}
+
