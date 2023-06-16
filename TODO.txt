@@ -21,10 +21,6 @@ Assessment:
 Card Creation:
 * only 40 cards per week
 
-Reviewing Cards:
-* add timer to page, allow people to pause (for this I can just have an element that shows the current time and a button to turn on or off it)
-* 
-
 general topic: middle ages
 previous pagraph: .....
 target paragraph: .....

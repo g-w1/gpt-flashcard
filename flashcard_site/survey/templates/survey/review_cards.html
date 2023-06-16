@@ -22,6 +22,7 @@ function renderCard() {
         	document.getElementById("numToDoToday").innerHTML = "";
 	}
 	if (card.id == null) {
+		document.getElementById("timer-div").hidden = true;
 		if (card.laterToday == null) {
 			if (card.newAvail) {
                 		text = "<h2>Cards Done For Today!</h2><p>Check Back Tomorrow</h2><p>There are some new cards, but you have reached the limit for new cards today, so you will see them tomorrow.</p>";
@@ -68,14 +69,9 @@ function load_card() {
 		renderCard()
 	});
 }
-function pauseTimer() {
-	TimeMe.stopTimer("card-" + card.id);
-}
-function unpauseTimer() {
-	TimeMe.startTimer("card-" + card.id);
-}
 function getTime() {
-    return TimeMe.getTimeOnPageInSeconds("card-" + card.id);
+    const a = TimeMe.getTimeOnPageInSeconds("card-" + card.id);
+    return a;
 }
 function submit() {
 	if (quality == null) {
@@ -97,12 +93,36 @@ function submit() {
 	.then((response) => response.json())
 	.then((j) => {console.log(j); load_card()});
 }
+let isPaused = false;
+function pauseTimer() {
+	TimeMe.stopTimer("card-" + card.id);
+	const button = document.getElementById("pause-timer");
+	button.removeEventListener("click", pauseTimer);
+	button.addEventListener("click", unpauseTimer);
+	button.src = "{% static 'survey/play-button.svg' %}";
+	isPaused = true;
+}
+function unpauseTimer() {
+	TimeMe.startTimer("card-" + card.id);
+	const button = document.getElementById("pause-timer");
+	button.removeEventListener("click", unpauseTimer);
+	button.addEventListener("click", pauseTimer);
+	button.src = "{% static 'survey/pause-button.svg' %}";
+	isPaused = false;
+}
 TimeMe.initialize({
 	currentPageName: "review-page",
-	idleTimeoutInSecond: 45,
+	idleTimeoutInSecond: 30,
 });
 load_card();
-setTimeout(() => { document.getElementById("time").innerHTML:
+function uptime() {
+    const t = Math.round(getTime());
+    console.log(t);
+    document.getElementById("time").textContent = t;
+}
+setInterval(uptime, 1000);
+window.onload = () => {document.getElementById("pause-timer").addEventListener("click", pauseTimer);}
+TimeMe.callWhenUserReturns(unpauseTimer);
 </script>
 <h1>Review Cards!</h1>
 
@@ -113,7 +133,7 @@ setTimeout(() => { document.getElementById("time").innerHTML:
 <button id="good-button" onclick="quality=4; submit()" hidden="true">Remembered</button>
 
 <div id="timer-div">
-        <p id="time">00:00</p>
-        <img id="pause-timer" src="{% static 'survey/pause-button.svg' %}" alt="pause button" width=40 onclick="pauseTimer()"></img>
+        <p id="time">0</p>
+        <img id="pause-timer" src="{% static 'survey/pause-button.svg' %}" alt="pause button" width=40></img>
 </div>
 {% endblock %}
