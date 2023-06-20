@@ -5,7 +5,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("survey", "0006_assessment_user_program_alter_card_time_next_today_and_more"),
     ]

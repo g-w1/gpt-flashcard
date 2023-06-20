@@ -1,4 +1,11 @@
 /* Global */
+
+.centered-content {
+    margin: 0 auto;
+    width: 50%;
+    text-align: center;
+}
+
 body {
   font-family: Arial, sans-serif;
   text-align: center;
@@ -200,4 +207,6 @@ ul {
 #pause-timer:hover {
     background-color: #0086d3;  /* Darker blue on hover */
 }
+
+
 

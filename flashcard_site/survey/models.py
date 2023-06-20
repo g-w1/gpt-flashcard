@@ -1,11 +1,16 @@
 from django.db import models
+from django.conf import settings
 from django.db.models import Q
 from django.utils import timezone
+from django.utils.html import strip_tags
+from django.core import mail
 from django.contrib.auth.models import (
     AbstractBaseUser,
     BaseUserManager,
     PermissionsMixin,
 )
+from django.template.loader import render_to_string
+from django.urls import reverse
 import datetime
 import json
 
@@ -139,6 +144,38 @@ class User(AbstractBaseUser, PermissionsMixin):
         days_passed = (timezone.localtime() - self.date_joined).days
         return self.survey_group.get_topic_to_make(days_passed)
 
+    def send_daily_reminder(self):
+        print(f"send_daily_reminder for {self.email}")
+        from_email = "Flashcard Reminder <reminder@flashcard-study.org>"
+        to = [self.email]
+        if self.final_assessment_is_due():
+            if self.needs_to_take_final_assessment:
+                subject = "Complete Your Final Check-In"
+                html_message = render_to_string("survey/do_final.html", {})
+                plain_message = strip_tags(html_message)
+                print(f"sending reminder for {self.email} ...")
+                mail.send_mail(subject, plain_message, from_email, to, html_message=html_message)
+            else:
+                return
+        else:
+            num_cards_to_do_today = self.num_cards_to_do_today
+            if num_cards_to_do_today == 0:
+                return
+            subject = "Review Your Flashcards Today"
+            html_message = render_to_string(
+                "survey/daily_reminder.html", {"num_cards": num_cards_to_do_today }
+            )
+            plain_message = strip_tags(html_message)
+            print(f"sending reminder for {self.email} ...")
+            mail.send_mail(subject, plain_message, from_email, to, html_message=html_message)
+
+    @staticmethod
+    def send_daily_reminders():
+        print("called send_daily_reminders")
+        users = list(User.objects.all())
+        for user in users:
+            user.send_daily_reminder()
+
 
 class Card(models.Model):
     belongs = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -219,10 +256,6 @@ class InitialSurvey(models.Model):
         ("unemployed", "Unemployed"),
         ("retired", "Retired"),
     ]
-    YES_NO_CHOICES = [
-        ("yes", "Yes"),
-        ("no", "No"),
-    ]
     STUDY_OUTSIDE_CHOICES = [
         ("<30m", "Studying for less than 30 minutes outside of school every week"),
         (
@@ -236,7 +269,6 @@ class InitialSurvey(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     age = models.PositiveIntegerField()
     occupation = models.CharField(max_length=20, choices=OCCUPATION_CHOICES)
-    used_flashcards = models.CharField(max_length=3, choices=YES_NO_CHOICES)
     study_outside = models.CharField(
         max_length=100, choices=STUDY_OUTSIDE_CHOICES, default="<30m"
     )

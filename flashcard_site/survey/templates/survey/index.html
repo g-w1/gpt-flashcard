@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% block content %}
-<h1>Flashcard Survey</h1>
+<div class='centered-content'>
+<h1>Flashcard Study</h1>
 
 {% if user.is_authenticated %}
 {% if user.experiment_group == 1 %} <!-- The writing group -->
@@ -42,5 +43,6 @@
 Hello, if you have recieved an invitation to be part of this study with your school, please <a href="{% url 'register' %}">register</a>.
 Otherwise, you can just ignore this page.
 </p>
+</div>
 {% endif %}
 {% endblock %}

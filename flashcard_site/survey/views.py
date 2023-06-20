@@ -35,9 +35,11 @@ def check_surveys_completed(view_func):
     def _wrapped_view(request, *args, **kwargs):
         if request.user.is_authenticated:
             if request.user.needs_to_take_survey:
+                group = 'writing' if request.user.survey_group == 1 else 'LLM'
+                message = 'write and study your own flashcards' if request.user.survey_group == 1 else 'study the flashcards written by a large language model (LLM)'
                 messages.info(
                     request,
-                    "You need to complete the survey before doing anything else",
+                    f"You need to complete the survey before doing anything else.\nYou are in the {group} group, which means you {message}",
                 )
                 return redirect("initial_survey")
             elif request.user.needs_to_take_initial_assessment:
@@ -71,6 +73,10 @@ def error(message):
 @check_surveys_completed
 def index(request):
     return render(request, "survey/index.html")
+
+
+def about(request):
+    return render(request, "survey/about.html")
 
 
 @login_required
@@ -346,8 +352,12 @@ def get_assessment(request, start):
         if not user.final_assessment_is_due():
             return redirect("index")
 
-    questions = ass.questions
-    correct_answers = json.loads(ass.correct_answers)
+    if start:
+        questions = ass.questions_start
+        correct_answers = json.loads(ass.correct_answers_start)
+    else:
+        questions = ass.questions_end
+        correct_answers = json.loads(ass.correct_answers_end)
 
     if not request.POST:
         return render(request, "survey/assess.html", {"questions": questions})

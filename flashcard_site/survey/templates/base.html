@@ -10,34 +10,35 @@
 <body>
     <nav>
         <div class="nav-container">
-            <a href="{% url 'index' %}">Home</a>
+            <a href="{% url 'index' %}">Home</a>&nbsp;
             {% if user.is_authenticated %}
-                <a href="{% url 'logout' %}">Logout</a>
+                <a href="{% url 'logout' %}">Logout</a>&nbsp;
                 {% if user.experiment_group == 1 %}
                     <a href="{% url 'add_card' %}">Add Card
                     <span id="numToAddToday">{% if user.num_cards_to_add_today != 0 %}
                     	(add {{user.num_cards_to_add_today}} more cards)
                     {%endif%}</span>
-                    </a>
+                    </a>&nbsp;
                 {% endif %}
                 <a href="{% url 'review_cards' %}">Review Cards
                 <span id="numToDoToday">{% if user.num_cards_to_do_today != 0 %}
                 	({{user.num_cards_to_do_today}})
                 {%endif%}</span>
-                	</a>
+                	</a>&nbsp;
                 {% if user.is_authenticated and user.needs_to_take_survey %}
-                    <a href="{% url 'initial_survey' %}" class="alert-button">Take Survey</a>
+                    <a href="{% url 'initial_survey' %}" class="alert-button">Take Survey</a>&nbsp;
                 {% endif %}
                 {% if user.is_authenticated and user.needs_to_take_initial_assessment %}
-                    <a href="{% url 'get_assessment' 'true' %}" class="alert-button">Initial Check In</a>
+                    <a href="{% url 'get_assessment' 'true' %}" class="alert-button">Initial Check In</a>&nbsp;
                 {% endif %}
                 {% if user.is_authenticated and user.needs_to_take_final_assessment %}
-                    <a href="{% url 'get_assessment' 'false' %}" class="alert-button">Final Check In</a>
+                    <a href="{% url 'get_assessment' 'false' %}" class="alert-button">Final Check In</a>&nbsp;
                 {% endif %}
             {% else %}
-                <a href="{% url 'login' %}">Login</a>
-                <a href="{% url 'register' %}">Register</a>
+                <a href="{% url 'login' %}">Login</a>&nbsp;
+                <a href="{% url 'register' %}">Register</a>&nbsp;
             {% endif %}
+            <a href="{% url 'about' %}">About</a>&nbsp;
         </div>
     </nav>
 

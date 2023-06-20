@@ -10,11 +10,6 @@ class InitialSurveyForm(forms.ModelForm):
         initial="student",
         label="Your Occupation",
     )
-    used_flashcards = forms.ChoiceField(
-        choices=InitialSurvey.YES_NO_CHOICES,
-        widget=forms.RadioSelect,
-        label="Have you ever used flashcards to study?",
-    )
     how_many_times_used_flashcards = forms.ChoiceField(
         choices=InitialSurvey.HOW_MANY_TIMES_CHOICES,
         label="How many times have you used flashcards (including computerized ones) to study?",
