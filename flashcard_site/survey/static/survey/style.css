@@ -101,6 +101,9 @@ hr {
 .alert-button {
     background-color: #dc3545 !important;  /* This sets the color to red */
 }
+.errorlist {
+    color: red;
+}
 
 .alert-button:hover {
     background-color: #c82333 !important;  /* This sets the hover color to a darker red */

@@ -12,7 +12,6 @@ User Inteface:
 * have some sort of dropdown with an why am I doing this. (bullets)
 	* then link to a further page that gives a detailed explanation
 * should shephard people through the process
-* style .errorlist in forms in css (the password and form errors)
 
 Assessment:
 * Make questions on new line (if they are long)
