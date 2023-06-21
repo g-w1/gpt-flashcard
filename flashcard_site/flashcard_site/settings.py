@@ -131,4 +131,6 @@ AUTH_USER_MODEL = "survey.User"
 
 EMAIL_BACKEND = "django_ses.SESBackend"
 
+DEFAULT_FROM_EMAIL = "info@flashcard-study.org"
+
 USE_SES_V2 = True
