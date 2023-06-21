@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.exceptions import ValidationError
 from django.conf import settings
 from django.db.models import Q
 from django.utils import timezone
@@ -26,6 +27,7 @@ class SurveyGroup(models.Model):
     name = models.CharField(max_length=100)
     cards_per_week = models.PositiveIntegerField(default=45)
     topics_to_make = models.TextField()  # json array of 5 arrays of strings
+    ai_cards = models.TextField()  # json of [{'question': Q, 'answer': A}]
 
     def get_topic_to_make(self, days_passed):
         topics_parsed = json.loads(self.topics_to_make)
@@ -34,6 +36,19 @@ class SurveyGroup(models.Model):
 
     def __str__(self):
         return self.name
+
+    def save(self, *args, **kwargs):
+        try:
+            ttm = json.loads(self.topics_to_make)
+            aic = json.loads(self.ai_cards)
+            assert type(ttm) == list
+            assert len(ttm) == 5
+            assert type(aic) == list
+        except:
+            raise ValidationError(
+                "SurveyGroup topics_to_make or ai_cards was not valid JSON"
+            )
+        super(SurveyGroup, self).save(*args, **kwargs)
 
 
 class UserManager(BaseUserManager):
@@ -154,7 +169,9 @@ class User(AbstractBaseUser, PermissionsMixin):
                 html_message = render_to_string("survey/do_final.html", {})
                 plain_message = strip_tags(html_message)
                 print(f"sending reminder for {self.email} ...")
-                mail.send_mail(subject, plain_message, from_email, to, html_message=html_message)
+                mail.send_mail(
+                    subject, plain_message, from_email, to, html_message=html_message
+                )
             else:
                 return
         else:
@@ -163,11 +180,13 @@ class User(AbstractBaseUser, PermissionsMixin):
                 return
             subject = "Review Your Flashcards Today"
             html_message = render_to_string(
-                "survey/daily_reminder.html", {"num_cards": num_cards_to_do_today }
+                "survey/daily_reminder.html", {"num_cards": num_cards_to_do_today}
             )
             plain_message = strip_tags(html_message)
             print(f"sending reminder for {self.email} ...")
-            mail.send_mail(subject, plain_message, from_email, to, html_message=html_message)
+            mail.send_mail(
+                subject, plain_message, from_email, to, html_message=html_message
+            )
 
     @staticmethod
     def send_daily_reminders():
@@ -175,6 +194,24 @@ class User(AbstractBaseUser, PermissionsMixin):
         users = list(User.objects.all())
         for user in users:
             user.send_daily_reminder()
+
+    def send_registration_email(self):
+        subject = "Flashcard Study Info"
+        from_email = "Flashcard Reminder <reminder@flashcard-study.org>"
+        to = [self.email]
+        html_message = render_to_string("survey/on_signup.html", {})
+        plain_message = strip_tags(html_message)
+        mail.send_mail(
+            subject, plain_message, from_email, to, html_message=html_message
+        )
+
+    def add_ai_cards_from_survey_group(self):
+        cards = json.loads(self.survey_group.ai_cards)
+        for card in cards:
+            q = card["question"]
+            a = card["answer"]
+            c = Card(belongs=self, front=q, back=a)
+            c.save()
 
 
 class Card(models.Model):

@@ -12,11 +12,10 @@ User Inteface:
 * have some sort of dropdown with an why am I doing this. (bullets)
 	* then link to a further page that gives a detailed explanation
 * should shephard people through the process
-
-* tell people what group they are in
+* style .errorlist in forms in css (the password and form errors)
 
 Assessment:
-* Find a better name than check in to call it
+* Make questions on new line (if they are long)
 
 Card Creation:
 * only 40 cards per week
@@ -25,3 +24,5 @@ general topic: middle ages
 previous pagraph: .....
 target paragraph: .....
 cards for target paragraph: .....
+
+

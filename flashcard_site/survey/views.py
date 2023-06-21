@@ -35,8 +35,12 @@ def check_surveys_completed(view_func):
     def _wrapped_view(request, *args, **kwargs):
         if request.user.is_authenticated:
             if request.user.needs_to_take_survey:
-                group = 'writing' if request.user.survey_group == 1 else 'LLM'
-                message = 'write and study your own flashcards' if request.user.survey_group == 1 else 'study the flashcards written by a large language model (LLM)'
+                group = "writing" if request.user.survey_group == 1 else "LLM"
+                message = (
+                    "write and study your own flashcards"
+                    if request.user.survey_group == 1
+                    else "study the flashcards written by a large language model (LLM)"
+                )
                 messages.info(
                     request,
                     f"You need to complete the survey before doing anything else.\nYou are in the {group} group, which means you {message}",
@@ -412,13 +416,13 @@ def get_disto_experiment_groups_in_survey_group(survey_group):
             ai += 1
         else:
             assert False  # the experiment group should be one of the three
-        return [writing, ai]
+    return [writing, ai]
 
 
 def get_experiment_group_for_next_user(survey_group):
     distros = get_disto_experiment_groups_in_survey_group(survey_group)
     # Check if all groups have the same distribution
-    if distros.count(distros[0]) == len(distros):
+    if distros[0] == distros[1]:
         # if yes, return a random group
         return random.choice([EXPERIMENT_GROUP_WRITING, EXPERIMENT_GROUP_AI])
     else:
@@ -448,7 +452,10 @@ def register(request):
             email = form.cleaned_data["email"]
             raw_password = form.cleaned_data["password1"]
             user = authenticate(email=email, password=raw_password)
+            if user.experiment_group == EXPERIMENT_GROUP_AI:
+                user.add_ai_cards_from_survey_group()
             login(request, user)
+            user.send_registration_email()  # TODO maybe queue this for less latency? or just spawn it in a thread
             return redirect("index")
     else:
         form = CustomUserCreationForm()

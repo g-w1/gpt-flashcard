@@ -1,0 +1,15 @@
+Hello,
+
+<p>Thanks so much for signing up for the study!</p>
+
+<p>In this study you are going to be {% if user.survey_group == 1 %} writing and reviewing flashcards {% else %} reviewing flashcards that we have made (using a cutting-edge method){% endif %} about the topics you are learning in your class.</p>
+<p>You should aim to review the flashcards <b>every day</b> to get the maximum learning out of them. It should not take very long to review them daily (5-10 minutes).</p>
+{% if user.survey_group == 1 %}
+<p>You should also write flashcards every day by clicking on <a href="https://flashcard-study.org/add_card">Add Card</a>. This will make sure that you have flashcards to review.</p>
+{% endif %}
+
+<p>Finally, to start the study, click <a href="https://flashcard-study.org/get_assessment/true">here</a> to take an initial survey.</p>
+
+<p>If you have any questions, feel free to contact the study's author <a href="mailto:goldman-wetzlerj24@learn.hohschools.org">here</a>.</p>
+
+<p>Thanks for participating!</p>
