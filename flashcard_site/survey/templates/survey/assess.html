@@ -22,7 +22,7 @@
     function generateRadio(choices, questionIndex) {
         let s = "";
         for (let i = 0; i < choices.length; i++) {
-            s += `<input type="radio" name="question${questionIndex}" value="${i}">${choices[i]}</input>`;
+            s += `<input type="radio" name="question${questionIndex}" value="${i}">${choices[i]}</input><br>`;
         }
         s += `<input type="radio" name="question${questionIndex}" value="${choices.length}">I don't know</input>`;
         return s;

@@ -1,7 +1,6 @@
 * AI
 	* Give the previous paragraph as context for the AI or give the general topic in addition to the text to generate flashcards on.
 	* 16k
-something like this for the prompt:
 
 Need to publish what algo I use to generate the cards
 
@@ -13,13 +12,10 @@ User Inteface:
 	* then link to a further page that gives a detailed explanation
 * should shephard people through the process
 
-Assessment:
-* Make questions on new line (if they are long)
-
 Card Creation:
 * only 40 cards per week
 
-general topic: middle ages
+general topic: middle ages (maybe do this)
 previous pagraph: .....
 target paragraph: .....
 cards for target paragraph: .....
