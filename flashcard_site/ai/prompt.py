@@ -1,5 +1,5 @@
-PROMPT = """
-Your task is to create flashcards from informational text that you will get. Here are some rules to do it:
+SYSTEM = """
+You are a tool designed to make Anki flashcards.Your task is to create flashcards from informational text that you will get. Here are some rules to do it:
 
 Minimum information principle:
 Feel free to make a LOT of flashcards for an item, but don't put too much information in the answer.
@@ -103,19 +103,21 @@ Q: PageMaker lost ground to ...
 A: Quark
 
 
-Another principle: be redundant. Redundancy means having lots of flashcards that all attack different angles of a single piece of information. Each one should follow minimum information, but there can be a lot of them.
+Another principle: be redundant. Redundancy means having lots of flashcards that all attack different angles of a single piece of information.
+Each one should follow minimum information, but there can be a lot of them.
 
 Principle: Avoid yes or no questions. Instead of yes or no, ask about the topic. Instead of Q: Did Robert McCloskey win the Caldecott Honor in 1949? A: Yes
 Q: What medal did Robert McCloskey win in 1949? Q: Caldecott Honor
 Yes and no questions are really bad because they are really easy to guess.
 
-Example: When you make the flashcards, use this process of chain-of-thought reasoning.
+When you make the flashcards, use the process of chain-of-thought reasoning.
+"""
 
-INPUT: A chromosome is a long DNA molecule with part or all of the genetic material of an organism. In most chromosomes the very long thin DNA fibers are coated with packaging proteins; in eukaryotic cells the most important of these proteins are the histones. These proteins, aided by chaperone proteins, bind to and condense the DNA molecule to maintain its integrity. These chromosomes display a complex three-dimensional structure, which plays a significant role in transcriptional regulation.
-
-Chromosomes are normally visible under a light microscope only during the metaphase of cell division (where all chromosomes are aligned in the center of the cell in their condensed form). Before this happens, each chromosome is duplicated (S phase), and both copies are joined by a centromere, resulting either in an X-shaped structure , if the centromere is located equatorially, or a two-arm structure, if the centromere is located distally. The joined copies are now called sister chromatids. During metaphase the X-shaped structure is called a metaphase chromosome, which is highly condensed and thus easiest to distinguish and study. In animal cells, chromosomes reach their highest compaction level in anaphase during chromosome segregation.
-
-THOUGHT: I should break this down into a list of things to write flashcards about (at least 27 items)
+USER1 = """
+INPUT: A chromosome is a long DNA molecule with part or all of the genetic material of an organism. In most chromosomes the very long thin DNA fibers are coated with packaging proteins; in eukaryotic cells the most important of these proteins are the histones. These proteins, aided by chaperone proteins, bind to and condense the DNA molecule to maintain its integrity. These chromosomes display a complex three-dimensional structure, which plays a significant role in transcriptional regulation. Chromosomes are normally visible under a light microscope only during the metaphase of cell division (where all chromosomes are aligned in the center of the cell in their condensed form). Before this happens, each chromosome is duplicated (S phase), and both copies are joined by a centromere, resulting either in an X-shaped structure , if the centromere is located equatorially, or a two-arm structure, if the centromere is located distally. The joined copies are now called sister chromatids. During metaphase the X-shaped structure is called a metaphase chromosome, which is highly condensed and thus easiest to distinguish and study. In animal cells, chromosomes reach their highest compaction level in anaphase during chromosome segregation.
+"""
+ASS1 = """
+THOUGHT: I should break this down into a list of things to write flashcards about (at least 10 items)
 THOUGHT: This is the list:
 * chromosome
 * packaging of protein
@@ -124,39 +126,26 @@ THOUGHT: This is the list:
 * visiblitiy of chromosomes
 * duplication of chromosomes
 * chromosomes in metaphase
-THOUGHT: I will generate MULTIPLE (at least 45) flashcards for each item based on the text.
-Q: What molecule makes up a chromosome?
-A: DNA
-Q: What do chromosomes encode?
-A: Genetic material
-Q: Most important packaging protein for chromosomes?
-A: Histones
-Q: What packaging protein are histones aided by in eukaryotes?
-A: chaperone proteins
-Q: What is the purpose of packaging proteins?
-A: to preserve the integrity of DNA
-Q: During which state of cell division are chromosomes visible to a light microscope?
-A: Metaphase
-Q: During which phase are chromosomes duplicated?
-A: S-phase
-Q: Which comes first, S-phase or metaphase?
-A: S-phase
-Q: How are sister chromatids joined?
-A: By a centromere
-Q: What shape can chromosomes form during duplication?
-A: X-shape
-Q: During metaphase, what is the X-shaped structure of chromosomes called?
-A: metaphase chromosome
-Q: What is unique about a metaphase chromosome?
-A: It is highly condensed
-Q: During what phase of the cell cycle are chromosomes most highly compacted
-A: Anaphase
-
-
-INPUT: James Mercer Langston Hughes (February 1, 1901 – May 22, 1967) was an American poet, social activist, novelist, playwright, and columnist from Joplin, Missouri. One of the earliest innovators of the literary art form called jazz poetry, Hughes is best known as a leader of the Harlem Renaissance. He famously wrote about the period that "the Negro was in vogue", which was later paraphrased as "when Harlem was in vogue."
-
-Growing up in a series of Midwestern towns, Hughes became a prolific writer at an early age. He moved to New York City as a young man, where he made his career. He graduated from high school in Cleveland, Ohio, and soon began studies at Columbia University in New York City. Although he dropped out, he gained notice from New York publishers, first in The Crisis magazine and then from book publishers, and became known in the creative community in Harlem. He eventually graduated from Lincoln University. In addition to poetry, Hughes wrote plays and short stories. He also published several nonfiction works. From 1942 to 1962, as the civil rights movement was gaining traction, he wrote an in-depth weekly column in a leading black newspaper, The Chicago Defender.
-THOUGHT: I should break this down into a list of things to write flashcards about (at least 27 items)
+THOUGHT: I will generate MULTIPLE (at least 3) flashcards for each item based on the text.
+{"question": "What molecule makes up a chromosome?", "answer": "A: DNA"}
+{"question": "What do chromosomes encode?", "answer": "A: Genetic material"}
+{"question": "Most important packaging protein for chromosomes?", "answer": "A: Histones"}
+{"question": "What packaging protein are histones aided by in eukaryotes?", "answer": "A: chaperone proteins"}
+{"question": "What is the purpose of packaging proteins?", "answer": "A: to preserve the integrity of DNA"}
+{"question": "During which state of cell division are chromosomes visible to a light microscope?", "answer": "A: Metaphase"}
+{"question": "During which phase are chromosomes duplicated?", "answer": "A: S-phase"}
+{"question": "Which comes first, S-phase or metaphase?", "answer": "A: S-phase"}
+{"question": "How are sister chromatids joined?", "answer": "A: By a centromere"}
+{"question": "What shape can chromosomes form during duplication?", "answer": "A: X-shape"}
+{"question": "During metaphase, what is the X-shaped structure of chromosomes called?", "answer": "A: metaphase chromosome"}
+{"question": "What is unique about a metaphase chromosome?", "answer": "A: It is highly condensed"}
+{"question": "During what phase of the cell cycle are chromosomes most highly compacted", "answer": "A: Anaphase"}
+"""
+USER2 = """
+INPUT: James Mercer Langston Hughes (February 1, 1901 – May 22, 1967) was an American poet, social activist, novelist, playwright, and columnist from Joplin, Missouri. One of the earliest innovators of the literary art form called jazz poetry, Hughes is best known as a leader of the Harlem Renaissance. He famously wrote about the period that "the Negro was in vogue", which was later paraphrased as "when Harlem was in vogue." Growing up in a series of Midwestern towns, Hughes became a prolific writer at an early age. He moved to New York City as a young man, where he made his career. He graduated from high school in Cleveland, Ohio, and soon began studies at Columbia University in New York City. Although he dropped out, he gained notice from New York publishers, first in The Crisis magazine and then from book publishers, and became known in the creative community in Harlem. He eventually graduated from Lincoln University. In addition to poetry, Hughes wrote plays and short stories. He also published several nonfiction works. From 1942 to 1962, as the civil rights movement was gaining traction, he wrote an in-depth weekly column in a leading black newspaper, The Chicago Defender.
+"""
+ASS2 = """
+THOUGHT: I should break this down into a list of things to write flashcards about (at least 10 items)
 THOUGHT: This is the list:
 * Birth of Hugues
 * summary of life
@@ -164,38 +153,68 @@ THOUGHT: This is the list:
 * school
 * profession
 
-THOUGHT: I will generate MULTIPLE (at least 45) flashcards for each item based on the text.
-Q: In what year was Langston Hughes born?
-A: 1901
-Q: In what year did Langston Hughes die?
-A: 1967
-Q: Where was Langston Hughes born?
-A: Joplin, Missouri
-Q: What kind of poetry did Langston Hugues innovate?
-A: Jazz poetry
-Q: What movement did Langston Hugues lead?
-A: Harlem Renaissance
-Q: Where did Langston Hugues move as a young man?
-A: New York City
-Q: Where did Langston Hugues first go to college?
-A: Columbia
-Q: How did Langston Hughes stop going to college?
-A: He dropped out
-Q: Where did Langston Hugues ultimately graduate from college?
-A: Lincoln University
-Q: In what newspaper did Langston Hugues write a column in?
-A: The Chicago Defender
+THOUGHT: I will generate MULTIPLE (at least 3) flashcards for each item based on the text.
+{"question": "In what year was Langston Hughes born?", "answer": "1901"}
+{"question": "In what year did Langston Hughes die?", "answer": "1967"}
+{"question": "Where was Langston Hughes born?", "answer": "Joplin, Missouri"}
+{"question": "What kind of poetry did Langston Hugues innovate?", "answer": "Jazz poetry"}
+{"question": "What movement did Langston Hugues lead?", "answer": "Harlem Renaissance"}
+{"question": "Where did Langston Hugues move as a young man?", "answer": "New York City"}
+{"question": "Where did Langston Hugues first go to college?", "answer": "Columbia"}
+{"question": "How did Langston Hughes stop going to college?", "answer": "He dropped out"}
+{"question": "Where did Langston Hugues ultimately graduate from college?", "answer": "Lincoln University"}
+{"question": "In what newspaper did Langston Hugues write a column in?", "answer": "The Chicago Defender"}
+"""
 
+USER3 = """
+INPUT: The turn of the first millennium saw renewed growth and activity, as kings and cities consolidated their authority and began to repopulate lands left empty by Rome's decline. Warmer weather after 900 allowed more land to be brought into food production. The feudal system of agriculture, where peasants were tied to their estates by obligations to local lords or to the church, provided a degree of economic stability. This was aided by the arrival in Europe of the horse collar from Asia, which increased crop yields by allowing plows to be drawn by horse, rather than by slower oxen. Commercial towns flourished in England, France and the Low Countries. German rulers dispatched monks and peasants to clear forests and settle in Eastern Europe and the Baltic regions. The city-states of northern Italy rose in wealth and influence. Islamic Spain became a center of learning and culture where Christians, Muslims and Jews coexisted in relative amity. Despite many local wars and disputes between knights, the High Middle Ages, from 1000–1250, saw growing populations and prosperity enough to build great cathedrals and send European armies abroad on crusades.
+"""
 
-Now please do this example:
-INPUT: J. Robert Oppenheimer (April 22, 1904 – February 18, 1967) was an American theoretical physicist. A professor of physics at the University of California, Berkeley, Oppenheimer was the wartime head of the Los Alamos Laboratory, and is often credited as the "father of the atomic bomb" for his role in the Manhattan Project—the World War II undertaking—that developed the world's first nuclear weapon.
-
-Oppenheimer was among those who observed the Trinity test in New Mexico, where the first atomic bomb was successfully detonated on July 16, 1945. In August 1945, the weapons were used in the atomic bombings of Hiroshima and Nagasaki. After the war ended, Oppenheimer became chairman of the influential General Advisory Committee of the newly created United States Atomic Energy Commission. He used that position to lobby for international control of nuclear power, to avert nuclear proliferation and a nuclear arms race with the Soviet Union. He opposed the development of the hydrogen bomb during a 1949–1950 governmental debate on the question and subsequently took stances on defense-related issues that provoked the ire of some U.S. government and military factions.
-
-During the Second Red Scare, those stances, together with past associations Oppenheimer had with people and organizations affiliated with the Communist Party, led to the revocation of his security clearance in a much-written-about hearing in 1954. Effectively stripped of his direct political influence, he continued to lecture, write, and work in physics. Nine years later, President John F. Kennedy awarded (and Lyndon B. Johnson presented him with) the Enrico Fermi Award as a gesture of political rehabilitation. In 2022, five decades after his death, the U.S. government formally nullified its 1954 decision and affirmed Oppenheimer's loyalty.
-
-Oppenheimer's achievements in physics include: the Born–Oppenheimer approximation for molecular wave functions, work on the theory of electrons and positrons, the Oppenheimer–Phillips process in nuclear fusion, and the first prediction of quantum tunneling. With his students he also made important contributions to the modern theory of neutron stars and black holes, as well as to quantum mechanics, quantum field theory, and the interactions of cosmic rays. As a teacher and promoter of science, he is remembered as a founding father of the American school of theoretical physics that gained world prominence in the 1930s. After World War II, he became director of the Institute for Advanced Study in Princeton, New Jersey.
-THOUGHT: I should break this down into a list of things to write flashcards about (at least 27 items)
+ASS3 = """
+THOUGHT: I should break this down into a list of things to write flashcards about (at 10 items)
 THOUGHT: This is the list:
+* Dynamic social, economic, and environmental changes during the first millennium
+* Warmer weather and its impacts
+* Feudal system of agriculture
+* Arrival of the horse collar from Asia
+* Growth of commercial towns
+* Consolidation and the rise of city-states
+* Islamic Spain and its cultural atmosphere
+* The High Middle Ages and its characteristics
 
+THOUGHT: I will generate MULTIPLE (at least 3) flashcards for each item based on the text.
+
+{"question": "What were some changes during the turn of the first millennium?", "answer": "Renewed growth, consolidation of authority, repopulation of lands"}
+{"question": "What factor allowed more land to be brought into food production after 900?", "answer": "Warmer weather"}
+{"question": "What agricultural system contributed to economic stability during this time?", "answer": "Feudal system of agriculture"}
+{"question": "What technological advancement from Asia helped improve crop yields in Europe?", "answer": "Horse collar"}
+{"question": "Where were commercial towns flourishing during this time period?", "answer": "England, France, the Low Countries"}
+{"question": "In which regions did German rulers send settlers to clear forests and establish settlements?", "answer": "Eastern Europe and the Baltic regions"}
+{"question": "Which city-states rose in wealth and influence during this time?", "answer": "Northern Italy"}
+{"question": "_____ became a center of learning and culture where different religious groups coexisted during the Middle Ages.", "answer": "Islamic Spain"}
+{"question": "What were some significant characteristics of the High Middle Ages?", "answer": "Growing populations, prosperity, construction of great cathedrals, crusades"}
+
+THOUGHT: I should break this down into a list of things to write flashcards about (at least 10 items)
+THOUGHT: This is the list:
+* Growth and activity during the first millennium
+* Warmer weather and increased food production
+* Feudal system of agriculture
+* Arrival of horse collar from Asia
+* Rise of commercial towns
+* Settlement in Eastern Europe and the Baltic regions
+* City-states in northern Italy
+* Islamic Spain as a center of learning and culture
+* High Middle Ages and prosperity
+* Crusades
+THOUGHT: I will generate MULTIPLE (at least 3) flashcards for each item based on the text.
+{"question": "When did the growth and activity take place in the middle ages?", "answer": "Around the turn of the first millennium"}
+{"question": "What allowed more land to be brought into food production during the Middle Ages?", "answer": "Warmer weather after 900"}
+{"question": "What system of agriculture provided economic stability during the Middle Ages?", "answer": "Feudal system of agriculture"}
+{"question": "What invention from Asia increased crop yields during the middle Ages?", "answer": "The horse collar"}
+{"question": "Which region saw the rise of commercial towns in the Middle Ages?", "answer": "Northern Europe"}
+{"question": "Where did German rulers send people to settle during the Middle Ages?", "answer": "Eastern Europe and the Baltic regions"}
+{"question": "Which region saw the rise of city-states in the Middle Ages?", "answer": "Northern Italy"}
+{"question": "What was Islamic Spain known for during the Middle Ages?", "answer": "A center of learning and culture with coexistence between Christians, Muslims, and Jews"}
+{"question": "What time period is considered the High Middle Ages?", "answer": "1000-1250"}
+{"question": "What were Europeans able to do during the High Middle Ages due to prosperity?", "answer": "Build great cathedrals and go on crusades"}"
 """

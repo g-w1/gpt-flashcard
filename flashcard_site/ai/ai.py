@@ -1,2 +1,2 @@
 def generate(a):
-    return
+    return "aorsietn "

@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("survey", "0030_remove_initialsurvey_used_flashcards"),
     ]

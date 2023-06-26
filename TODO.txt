@@ -25,3 +25,8 @@ target paragraph: .....
 cards for target paragraph: .....
 
 * the initial email may not actually be changing conditional on the user type
+
+tell the AI to be context-independent: the content of a question should not depend on the text OR previous questions (it does not do this now)
+
+be able to feed it a whole chapter and it can split it up based on some heuristics like paragraph length, etc
+also change max tokens based on word length of input, but it should be relatively consistent because of ^^
