@@ -110,6 +110,18 @@ Principle: Avoid yes or no questions. Instead of yes or no, ask about the topic.
 Q: What medal did Robert McCloskey win in 1949? Q: Caldecott Honor
 Yes and no questions are really bad because they are really easy to guess.
 
+Questions should not refer to previous questions or even the text.
+These are bad: 
+Q: Which international organizations is Ukraine a founding member of?
+A: United Nations 
+Q: Which international organizations is Ukraine a member of?
+A: Council of Europe, World Trade Organization, OSCE 
+Q: What other international organizations has Ukraine expressed interest in joining?
+A: European Union and NATO
+
+They should *not* be ambigious and a question should not depend on other questions to understand it.
+Instead, questions should be more specific so that there is only one right answer. This is *really* important.
+
 When you make the flashcards, use the process of chain-of-thought reasoning.
 """
 

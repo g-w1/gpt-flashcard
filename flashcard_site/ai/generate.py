@@ -1,27 +1,11 @@
 import os
 import openai
 import json
+import sys
 from prompt import *
 
-INPUT = input()
-
-messages = [
-    {"role": "system", "content": SYSTEM},
-    {"role": "user", "content": USER1},
-    {"role": "assistant", "content": ASS1},
-    {"role": "user", "content": USER2},
-    {"role": "assistant", "content": ASS2},
-    {"role": "user", "content": USER3},
-    {"role": "assistant", "content": ASS3},
-    {"role": "user", "content": INPUT},
-]
-openai.api_key = os.getenv("OPENAI_API_KEY")
-
-completion = openai.ChatCompletion.create(
-    model="gpt-3.5-turbo-16k", messages=messages, temperature=1.3, max_tokens=1024
-)
-
-message = completion.choices[0].message
+INPUT_paragraphs = sys.stdin.readlines()
+cards = []
 
 
 def extract_json_objects(string):
@@ -41,5 +25,35 @@ def extract_json_objects(string):
     return json_objects
 
 
-cards = extract_json_objects(message["content"])
+def get_cards_from_paragraph(paragraph):
+    messages = [
+        {"role": "system", "content": SYSTEM},
+        {"role": "user", "content": USER1},
+        {"role": "assistant", "content": ASS1},
+        {"role": "user", "content": USER2},
+        {"role": "assistant", "content": ASS2},
+        {"role": "user", "content": USER3},
+        {"role": "assistant", "content": ASS3},
+        {"role": "user", "content": paragraph},
+    ]
+    openai.api_key = os.getenv("OPENAI_API_KEY")
+
+    word_count = len(paragraph.split())
+    if word_count < 3:
+        return []
+
+    completion = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo-16k",
+        messages=messages,
+        temperature=1.3,
+        max_tokens=word_count * 9,
+    )
+
+    message = completion.choices[0].message
+    return extract_json_objects(message["content"])
+
+
+for paragraph in INPUT_paragraphs:
+    cards.extend(get_cards_from_paragraph(paragraph))
+
 print(json.dumps(cards))
