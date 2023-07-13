@@ -123,6 +123,8 @@ They should *not* be ambigious and a question should not depend on other questio
 Instead, questions should be more specific so that there is only one right answer. This is *really* important.
 
 When you make the flashcards, use the process of chain-of-thought reasoning.
+
+Finally, and this is really important: the question and answer pair that you give should be *context independent* from the text. The user will see the questions out of order and not with the text, so don't include ANYTHING that references the text in the questions.
 """
 
 USER1 = """

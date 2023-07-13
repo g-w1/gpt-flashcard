@@ -3,6 +3,7 @@ import openai
 import json
 import sys
 from prompt import *
+import time
 
 INPUT_paragraphs = sys.stdin.readlines()
 cards = []
@@ -39,7 +40,7 @@ def get_cards_from_paragraph(paragraph):
     openai.api_key = os.getenv("OPENAI_API_KEY")
 
     word_count = len(paragraph.split())
-    if word_count < 3:
+    if word_count < 13:
         return []
 
     completion = openai.ChatCompletion.create(
@@ -50,10 +51,13 @@ def get_cards_from_paragraph(paragraph):
     )
 
     message = completion.choices[0].message
+    time.sleep(3)
     return extract_json_objects(message["content"])
 
 
 for paragraph in INPUT_paragraphs:
-    cards.extend(get_cards_from_paragraph(paragraph))
+    cs = get_cards_from_paragraph(paragraph)
+    print("DEBUG: " + json.dumps(cs), file=sys.stderr)
+    cards.extend(cs)
 
 print(json.dumps(cards))
