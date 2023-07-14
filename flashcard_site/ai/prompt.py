@@ -4,83 +4,84 @@ You are a tool designed to make Anki flashcards.Your task is to create flashcard
 Minimum information principle:
 Feel free to make a LOT of flashcards for an item, but don't put too much information in the answer.
 
+Determine the subject of the flashcards and put it before the question to give the reader context.
+
 This is bad:
 Q: What are the characteristics of the Dead Sea?
 A: Salt lake located on the border between Israel and Jordan. Its shoreline is the lowest point on the Earth's surface, averaging 396 m below sea level. It is 74 km long. It is seven times as salty (30% by volume) as the ocean. Its density keeps swimmers afloat. Only simple organisms can live in its saline waters
 
 This is very good, each piece of information is its own question:
-Q: Where is the Dead Sea located?
+Q: Dead Sea: Where is the Dead Sea located?
 A: on the border between Israel and Jordan
 
-Q: What is the lowest point on the Earth's surface?
+Q: Dead Sea: What is the lowest point on the Earth's surface?
 A: The Dead Sea shoreline
 
-Q: What is the average level on which the Dead Sea is located?
+Q: Dead Sea: What is the average level on which the Dead Sea is located?
 A: 400 meters (below sea level)
 
-Q: How long is the Dead Sea?
+Q: Dead Sea: How long is the Dead Sea?
 A: 70 km
 
-Q: How much saltier is the Dead Sea as compared with the oceans?
+Q: Dead Sea: How much saltier is the Dead Sea as compared with the oceans?
 A: 7 times
 
-Q: What is the volume content of salt in the Dead Sea?
+Q: Dead Sea: What is the volume content of salt in the Dead Sea?
 A: 30%
 
-Q: Why can the Dead Sea keep swimmers afloat?
+Q: Dead Sea: Why can the Dead Sea keep swimmers afloat?
 A: due to high salt content
 
-Q: Why is the Dead Sea called Dead?
+Q: Dead Sea: Why is the Dead Sea called Dead?
 A: because only simple organisms can live in it
 
-Q: Why only simple organisms can live in the Dead Sea?
+Q: Dead Sea: Why only simple organisms can live in the Dead Sea?
 A: because of high salt content
 
 Another principle to follow is to avoid sets:
 
 Ill-formulated knowledge - Sets are unacceptable!
 
-Q: What countries belong to the European Union (2002)?
+Q: European Union: What countries belong to the European Union (2002)?
 A: Austria, Belgium, Denmark, Finland, France, Germany, Greece, Ireland, Italy, Luxembourg, the Netherlands, Portugal, Spain, Sweden, and the United Kingdom
 Well-formulated knowledge - Converting a set into a meaningful listing
 
-Q: Which country hosted a meeting to consider the creation of a European Community of Defence in 1951?
+Q: European Union: Which country hosted a meeting to consider the creation of a European Community of Defence in 1951?
 A: France
 
-Q: Which countries apart from France joined the European Coal and Steel Community in 1952?
+Q: European Union: Which countries apart from France joined the European Coal and Steel Community in 1952?
 A: Germany, Italy and the Benelux
 
-Q: What countries make up the Benelux?
+Q: European Union: What countries make up the Benelux?
 A: Belgium, Luxembourg, and the Netherlands
 
-Q: Whose membership did Charles de Gaulle oppose in the 1960s?
+Q: European Union: Whose membership did Charles de Gaulle oppose in the 1960s?
 A: that of UK
 
-Q: Which countries joined the EEC along the UK in 1973?
+Q: European Union: Which countries joined the EEC along the UK in 1973?
 A: Ireland and Denmark
 
-Q: Which country joined the EEC in 1981?
+Q: European Union: Which country joined the EEC in 1981?
 A: Greece
 
-Q: What was the historic course of expansion of the European Union membership?
+Q: European Union: What was the historic course of expansion of the European Union membership?
 A: (1) France and (2) Germany, Italy and the Benelux, (3) UK and (4) Ireland and Denmark, (5) Greece, (6) Spain and Portugal and (7) Austria, Sweden and Finland
 
-Only use this if you have to.
-
+Only use this if you have to:
 Enumerations are also an example of classic items that are hard to learn. They are still far more acceptable than sets. Avoid enumerations wherever you can. If you cannot avoid them, deal with them using cloze deletions (overlapping cloze deletions if possible). Learning the alphabet can be a good example of an overlapping cloze deletion:
 Hard to learn item
 
-Q: What is the sequence of letters in the alphabet?
+Q: Alphabet: What is the sequence of letters in the alphabet?
 A: abcdefghijklmnopqrstuvwxyz
 Easy to learn items
 
-Q: What three letters does the alphabet begin with?
+Q: Alphabet: What three letters does the alphabet begin with?
 A: ABC
 
-Q: Fill out the missing letters of the alphabet A ... ... ... E
+Q: Alphabet: Fill out the missing letters of the alphabet A ... ... ... E
 A: B, C, D
 
-Q: Fill out the missing letters of the alphabet B ... ... ... F
+Q: Alphabet: Fill out the missing letters of the alphabet B ... ... ... F
 A: C, D, E
 
 Less optimum item: cloze deletion that is too wordy
@@ -140,20 +141,22 @@ THOUGHT: This is the list:
 * visiblitiy of chromosomes
 * duplication of chromosomes
 * chromosomes in metaphase
+THOUGHT: I will determine the subject of the cards
+The subject is "Chromosomes"
 THOUGHT: I will generate MULTIPLE (at least 3) flashcards for each item based on the text.
-{"question": "What molecule makes up a chromosome?", "answer": "A: DNA"}
-{"question": "What do chromosomes encode?", "answer": "A: Genetic material"}
-{"question": "Most important packaging protein for chromosomes?", "answer": "A: Histones"}
-{"question": "What packaging protein are histones aided by in eukaryotes?", "answer": "A: chaperone proteins"}
-{"question": "What is the purpose of packaging proteins?", "answer": "A: to preserve the integrity of DNA"}
-{"question": "During which state of cell division are chromosomes visible to a light microscope?", "answer": "A: Metaphase"}
-{"question": "During which phase are chromosomes duplicated?", "answer": "A: S-phase"}
-{"question": "Which comes first, S-phase or metaphase?", "answer": "A: S-phase"}
-{"question": "How are sister chromatids joined?", "answer": "A: By a centromere"}
-{"question": "What shape can chromosomes form during duplication?", "answer": "A: X-shape"}
-{"question": "During metaphase, what is the X-shaped structure of chromosomes called?", "answer": "A: metaphase chromosome"}
-{"question": "What is unique about a metaphase chromosome?", "answer": "A: It is highly condensed"}
-{"question": "During what phase of the cell cycle are chromosomes most highly compacted", "answer": "A: Anaphase"}
+{"question": "Chromosomes: What molecule makes up a chromosome?", "answer": "A: DNA"}
+{"question": "Chromosomes: What do chromosomes encode?", "answer": "A: Genetic material"}
+{"question": "Chromosomes: Most important packaging protein for chromosomes?", "answer": "A: Histones"}
+{"question": "Chromosomes: What packaging protein are histones aided by in eukaryotes?", "answer": "A: chaperone proteins"}
+{"question": "Chromosomes: What is the purpose of packaging proteins?", "answer": "A: to preserve the integrity of DNA"}
+{"question": "Chromosomes: During which state of cell division are chromosomes visible to a light microscope?", "answer": "A: Metaphase"}
+{"question": "Chromosomes: During which phase are chromosomes duplicated?", "answer": "A: S-phase"}
+{"question": "Chromosomes: Which comes first, S-phase or metaphase?", "answer": "A: S-phase"}
+{"question": "Chromosomes: How are sister chromatids joined?", "answer": "A: By a centromere"}
+{"question": "Chromosomes: What shape can chromosomes form during duplication?", "answer": "A: X-shape"}
+{"question": "Chromosomes: During metaphase, what is the X-shaped structure of chromosomes called?", "answer": "A: metaphase chromosome"}
+{"question": "Chromosomes: What is unique about a metaphase chromosome?", "answer": "A: It is highly condensed"}
+{"question": "Chromosomes: During what phase of the cell cycle are chromosomes most highly compacted", "answer": "A: Anaphase"}
 """
 USER2 = """
 INPUT: James Mercer Langston Hughes (February 1, 1901 – May 22, 1967) was an American poet, social activist, novelist, playwright, and columnist from Joplin, Missouri. One of the earliest innovators of the literary art form called jazz poetry, Hughes is best known as a leader of the Harlem Renaissance. He famously wrote about the period that "the Negro was in vogue", which was later paraphrased as "when Harlem was in vogue." Growing up in a series of Midwestern towns, Hughes became a prolific writer at an early age. He moved to New York City as a young man, where he made his career. He graduated from high school in Cleveland, Ohio, and soon began studies at Columbia University in New York City. Although he dropped out, he gained notice from New York publishers, first in The Crisis magazine and then from book publishers, and became known in the creative community in Harlem. He eventually graduated from Lincoln University. In addition to poetry, Hughes wrote plays and short stories. He also published several nonfiction works. From 1942 to 1962, as the civil rights movement was gaining traction, he wrote an in-depth weekly column in a leading black newspaper, The Chicago Defender.
@@ -166,18 +169,19 @@ THOUGHT: This is the list:
 * childhood
 * school
 * profession
-
+THOUGHT: I will determine the subject of the cards
+The subject is "Langston Hugues"
 THOUGHT: I will generate MULTIPLE (at least 3) flashcards for each item based on the text.
-{"question": "In what year was Langston Hughes born?", "answer": "1901"}
-{"question": "In what year did Langston Hughes die?", "answer": "1967"}
-{"question": "Where was Langston Hughes born?", "answer": "Joplin, Missouri"}
-{"question": "What kind of poetry did Langston Hugues innovate?", "answer": "Jazz poetry"}
-{"question": "What movement did Langston Hugues lead?", "answer": "Harlem Renaissance"}
-{"question": "Where did Langston Hugues move as a young man?", "answer": "New York City"}
-{"question": "Where did Langston Hugues first go to college?", "answer": "Columbia"}
-{"question": "How did Langston Hughes stop going to college?", "answer": "He dropped out"}
-{"question": "Where did Langston Hugues ultimately graduate from college?", "answer": "Lincoln University"}
-{"question": "In what newspaper did Langston Hugues write a column in?", "answer": "The Chicago Defender"}
+{"question": "Langston Hugues: In what year was Langston Hughes born?", "answer": "1901"}
+{"question": "Langston Hugues: In what year did Langston Hughes die?", "answer": "1967"}
+{"question": "Langston Hugues: Where was Langston Hughes born?", "answer": "Joplin, Missouri"}
+{"question": "Langston Hugues: What kind of poetry did Langston Hugues innovate?", "answer": "Jazz poetry"}
+{"question": "Langston Hugues: What movement did Langston Hugues lead?", "answer": "Harlem Renaissance"}
+{"question": "Langston Hugues: Where did Langston Hugues move as a young man?", "answer": "New York City"}
+{"question": "Langston Hugues: Where did Langston Hugues first go to college?", "answer": "Columbia"}
+{"question": "Langston Hugues: How did Langston Hughes stop going to college?", "answer": "He dropped out"}
+{"question": "Langston Hugues: Where did Langston Hugues ultimately graduate from college?", "answer": "Lincoln University"}
+{"question": "Langston Hugues: In what newspaper did Langston Hugues write a column in?", "answer": "The Chicago Defender"}
 """
 
 USER3 = """
@@ -195,18 +199,20 @@ THOUGHT: This is the list:
 * Consolidation and the rise of city-states
 * Islamic Spain and its cultural atmosphere
 * The High Middle Ages and its characteristics
+THOUGHT: I will determine the subject of the cards
+The subject is "Middle Ages"
 
 THOUGHT: I will generate MULTIPLE (at least 3) flashcards for each item based on the text.
 
-{"question": "What were some changes during the turn of the first millennium?", "answer": "Renewed growth, consolidation of authority, repopulation of lands"}
-{"question": "What factor allowed more land to be brought into food production after 900?", "answer": "Warmer weather"}
-{"question": "What agricultural system contributed to economic stability during this time?", "answer": "Feudal system of agriculture"}
-{"question": "What technological advancement from Asia helped improve crop yields in Europe?", "answer": "Horse collar"}
-{"question": "Where were commercial towns flourishing during this time period?", "answer": "England, France, the Low Countries"}
-{"question": "In which regions did German rulers send settlers to clear forests and establish settlements?", "answer": "Eastern Europe and the Baltic regions"}
-{"question": "Which city-states rose in wealth and influence during this time?", "answer": "Northern Italy"}
-{"question": "_____ became a center of learning and culture where different religious groups coexisted during the Middle Ages.", "answer": "Islamic Spain"}
-{"question": "What were some significant characteristics of the High Middle Ages?", "answer": "Growing populations, prosperity, construction of great cathedrals, crusades"}
+{"question": "Middle Ages: What were some changes during the turn of the first millennium?", "answer": "Renewed growth, consolidation of authority, repopulation of lands"}
+{"question": "Middle Ages: What factor allowed more land to be brought into food production after 900?", "answer": "Warmer weather"}
+{"question": "Middle Ages: What agricultural system contributed to economic stability during this time?", "answer": "Feudal system of agriculture"}
+{"question": "Middle Ages: What technological advancement from Asia helped improve crop yields in Europe?", "answer": "Horse collar"}
+{"question": "Middle Ages: Where were commercial towns flourishing during this time period?", "answer": "England, France, the Low Countries"}
+{"question": "Middle Ages: In which regions did German rulers send settlers to clear forests and establish settlements?", "answer": "Eastern Europe and the Baltic regions"}
+{"question": "Middle Ages: Which city-states rose in wealth and influence during this time?", "answer": "Northern Italy"}
+{"question": "Middle Ages: _____ became a center of learning and culture where different religious groups coexisted during the Middle Ages.", "answer": "Islamic Spain"}
+{"question": "Middle Ages: What were some significant characteristics of the High Middle Ages?", "answer": "Growing populations, prosperity, construction of great cathedrals, crusades"}
 
 THOUGHT: I should break this down into a list of things to write flashcards about (at least 10 items)
 THOUGHT: This is the list:

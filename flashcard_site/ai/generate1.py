@@ -2,7 +2,7 @@ import os
 import openai
 import json
 import sys
-from prompt import *
+from prompt1 import *
 import time
 
 INPUT_paragraphs = sys.stdin.readlines()
