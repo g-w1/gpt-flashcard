@@ -9,11 +9,17 @@ class Command(BaseCommand):
         parser.add_argument(
             "namecode", help="SurveyGroup name (should be a code to enter)", type=str
         )
+        parser.add_argument(
+            "topics_file", help="file containing the topics_to_make", type=str
+        )
+        parser.add_argument(
+            "cards_file", help="file containing the JSON of the cards", type=str
+        )
 
     def handle(self, *args, **options):
         namecode = options["namecode"]
-        topics_to_make = input("please enter the json of topics_to_make:")
-        ai_cards = input("please enter the json of ai_cards:")
+        topics_to_make = open(options["topics_file"], 'r').read()
+        ai_cards = open(options["cards_file"], 'r').read()
         sg = SurveyGroup(
             name=namecode, topics_to_make=topics_to_make, ai_cards=ai_cards
         )
