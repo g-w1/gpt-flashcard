@@ -7,7 +7,7 @@ import time
 
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
-USE_GPT_4 = True
+USE_GPT_4 = False
 MODEL = "gpt-4" if USE_GPT_4 else "gpt-3.5-turbo-16k"
 
 
@@ -89,6 +89,7 @@ if __name__ == "__main__":
         facts = get_facts_from_paragraph(paragraph)
         debug("facts:", facts)
         cs = get_cards_from_facts(facts)
+        debug("cards:", cs)
         cards.extend(cs)
 
-        print(json.dumps(cards))
+    print(json.dumps(cards))
