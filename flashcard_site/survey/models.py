@@ -132,6 +132,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     def num_cards_to_do_today(self):
         cards_for_today = Card.objects.filter(
             Q(belongs=self)
+            & Q(suspended=False)
             & Q(date_next__lte=timezone.localtime())
             & (
                 Q(time_next_today__lte=timezone.localtime())
@@ -148,7 +149,10 @@ class User(AbstractBaseUser, PermissionsMixin):
     def num_cards_to_add_today(self):
         return (
             NEW_ADDED_EVERY_DAY
-            - Card.objects.filter(created=timezone.localdate(), belongs=self).count()
+            - Card.objects.filter(
+                created=timezone.localdate(),
+                belongs=self,
+            ).count()
         )
 
     def final_assessment_is_due(self):
@@ -230,6 +234,7 @@ class Card(models.Model):
     )  # Initially, the card has not been reviewed, so repetitions is 0
     queue_type = models.IntegerField(default=QUEUE_TYPE_NEW)
     created = models.DateField(auto_now_add=True)  # why not showing up in admin
+    suspended = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.front}/{self.back}/next: {self.date_next}"

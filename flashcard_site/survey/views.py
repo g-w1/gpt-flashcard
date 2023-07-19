@@ -113,7 +113,7 @@ def get_card_from_cards(cards, num_cards_to_do_today):
 def get_cards(request):
     user = request.user
     num_cards_to_do_today = user.num_cards_to_do_today
-    cards_for_user = Card.objects.filter(belongs=user)
+    cards_for_user = Card.objects.filter(belongs=user, suspended=False)
     # these are the ones that use time_next_today, because they are sensitive to minutes
     lrn_for_today = cards_for_user.filter(
         Q(date_next__lte=timezone.localdate())
@@ -233,6 +233,11 @@ def submit_card(request):
             "you submitted a card that does not exist, or from another user, or card that is not ready to be displayed yet",
         )
     card = card[0]
+    suspend = req["suspend"]
+    if suspend:
+        card.suspended = True
+        card.save()
+        return HttpResponse('{"analyzed":true}', content_type="application/json")
 
     # SETUP THE STATS
     # fill in all the fields that we have now
