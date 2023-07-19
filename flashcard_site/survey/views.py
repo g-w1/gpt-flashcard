@@ -262,7 +262,7 @@ def submit_card(request):
         else:
             card.queue_type = QUEUE_TYPE_NEW_FAILED
             card.interval = 0
-            minutes_next = 1
+            minutes_next = 0
             card.repetitions = 0
         user.new_cards_added_today += 1
         user.save()
