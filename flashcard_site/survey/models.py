@@ -32,6 +32,8 @@ class SurveyGroup(models.Model):
     def get_topic_to_make(self, days_passed):
         topics_parsed = json.loads(self.topics_to_make)
         week = days_passed // 7
+        if week > 4:
+            week = 4
         return topics_parsed[week]
 
     def __str__(self):

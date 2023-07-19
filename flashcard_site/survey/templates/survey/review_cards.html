@@ -53,6 +53,7 @@ function renderCard() {
         	document.getElementById("flip-button").hidden = false;
         	document.getElementById("good-button").hidden = true;
         	document.getElementById("again-button").hidden = true;
+        	document.getElementById("suspend-button").hidden = true;
 	}
 	document.getElementById("card").innerHTML = text;
 }
@@ -134,7 +135,8 @@ TimeMe.callWhenUserReturns(unpauseTimer);
 <button id="flip-button" onclick="flipped=true; renderCard();" hidden="true">Flip</button>
 <button id="again-button" onclick="quality=1; submit()" hidden="true">Again</button>
 <button id="good-button" onclick="quality=4; submit()" hidden="true">Remembered</button>
-<button id="suspend-button" onclick="suspend=true; submit();" hidden="true" style="background-color: red;">Suspend (Only Click If Card Makes No Sense)</button>
+
+<button id="suspend-button" onclick="quality=1; suspend=true; submit();" hidden="true" style="background-color: red;">Suspend (Only Click If Card Makes No Sense)</button>
 
 <div id="timer-div">
         <p id="time">0</p>
