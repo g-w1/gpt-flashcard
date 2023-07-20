@@ -182,6 +182,12 @@ details[open] summary {
 ul {
     list-style-position: inside;
 }
+#suspend-button {
+  position: fixed;
+  left: 20px;
+  bottom: 20px;
+  padding: 10px;
+}
 /* timer */
 #timer-div {
     position: fixed;
