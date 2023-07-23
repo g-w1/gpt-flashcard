@@ -1,2 +1,70 @@
-[ { "question": "What color skin does Vishnu have?", "answers": ["blood red", "dark blue", "dark green", "orange"] }, { "question": "Which god has the lotus as a symbol?", "answers": ["Shiva", "Brahma", "Vishnu", "Ganesha"] }, { "question": "Who is the god of war?", "answers": ["Sri", "Rama", "Indra", "Hanuman"] }, { "question": "Which god is the patron of preists?", "answers": ["Agni", "Lakshi", "Rama", "Ganesha"] }, { "question": "Who is the hero of the Ramayana?", "answers": ["Krishna", "Ganesha", "Indra", "Rama"] }, { "question": "Who is born from Vishnu's dark hair?", "answers": ["Sri", "Krishna", "Indra", "Rama"] }, { "question": "Who was the last treasure born from the 'churning of the ocean'?", "answers": ["Sri", "Shiva", "Arjuna", "Hanuman"] }, { "question": "What action brings Agni to life?", "answers": [ "breathing air", "rubbing two sticks together", "walking through fire", "praying to him" ] }, { "question": "Which god has a human's body with a monkey's head?", "answers": ["Vishnu", "Sri", "rama", "Hanuman"] }, { "question": "Which god is often shown riding a rat?", "answers": ["Brahma", "Shiva", "Ganesha", "Indra"] }, { "question": "Who is the chief hero of the Mahabharata", "answers": ["Vishnu", "Arjuna", "Indra", "Ganesha"] }, { "question": "Who is the father of Sita?", "answers": ["King Janaka", "King Krishna", "Indra", "Lashmi"] }, { "question": "Who is the only person that can string Shiva's bow in a contest?", "answers": ["Rama", "Indra", "Brahma", "Vishnu"] }, { "question": "How many avatars of Vishnu have appeared?", "answers": ["Zero", "Seven", "One hundred", "Nine"] }, { "question": "In Hindu mythology, who is the creator?", "answers": ["Krishna", "Vishnu", "Brahma", "Ganesha"] } ]
-[1, 2, 2, 0, 3, 1, 0, 1, 3, 2, 1, 0, 0, 3, 2]
+[
+  [
+    {
+      "question": "What color skin does Vishnu have?",
+      "answers": ["blood red", "dark blue", "dark green", "orange"]
+    },
+    {
+      "question": "Which god has the lotus as a symbol?",
+      "answers": ["Shiva", "Brahma", "Vishnu", "Ganesha"]
+    },
+    {
+      "question": "Who is the god of war?",
+      "answers": ["Sri", "Rama", "Indra", "Hanuman"]
+    },
+    {
+      "question": "Which god is the patron of preists?",
+      "answers": ["Agni", "Lakshi", "Rama", "Ganesha"]
+    },
+    {
+      "question": "Who is the hero of the Ramayana?",
+      "answers": ["Krishna", "Ganesha", "Indra", "Rama"]
+    },
+    {
+      "question": "Who is born from Vishnu's dark hair?",
+      "answers": ["Sri", "Krishna", "Indra", "Rama"]
+    },
+    {
+      "question": "Who was the last treasure born from the 'churning of the ocean'?",
+      "answers": ["Sri", "Shiva", "Arjuna", "Hanuman"]
+    },
+    {
+      "question": "What action brings Agni to life?",
+      "answers": [
+        "breathing air",
+        "rubbing two sticks together",
+        "walking through fire",
+        "praying to him"
+      ]
+    },
+    {
+      "question": "Which god has a human's body with a monkey's head?",
+      "answers": ["Vishnu", "Sri", "rama", "Hanuman"]
+    },
+    {
+      "question": "Which god is often shown riding a rat?",
+      "answers": ["Brahma", "Shiva", "Ganesha", "Indra"]
+    },
+    {
+      "question": "Who is the chief hero of the Mahabharata",
+      "answers": ["Vishnu", "Arjuna", "Indra", "Ganesha"]
+    },
+    {
+      "question": "Who is the father of Sita?",
+      "answers": ["King Janaka", "King Krishna", "Indra", "Lashmi"]
+    },
+    {
+      "question": "Who is the only person that can string Shiva's bow in a contest?",
+      "answers": ["Rama", "Indra", "Brahma", "Vishnu"]
+    },
+    {
+      "question": "How many avatars of Vishnu have appeared?",
+      "answers": ["Zero", "Seven", "One hundred", "Nine"]
+    },
+    {
+      "question": "In Hindu mythology, who is the creator?",
+      "answers": ["Krishna", "Vishnu", "Brahma", "Ganesha"]
+    }
+  ],
+  [1, 2, 2, 0, 3, 1, 0, 1, 3, 2, 1, 0, 0, 3, 2]
+]

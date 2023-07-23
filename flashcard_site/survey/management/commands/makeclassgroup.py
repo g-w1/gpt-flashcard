@@ -1,5 +1,6 @@
 from django.core.management.base import BaseCommand, CommandError
 from survey.models import Assessment, SurveyGroup
+import json
 
 
 class Command(BaseCommand):
@@ -16,27 +17,30 @@ class Command(BaseCommand):
             "cards_file", help="file containing the JSON of the cards", type=str
         )
 
+        parser.add_argument(
+            "beginning_assessment_file",
+            help="file containing the JSON of an array of the qs + choices in index 0 and correct answers in index 1",
+        )
+        parser.add_argument(
+            "final_assessment_file",
+            help="file containing the JSON of an array of the qs + choices in index 0 and correct answers in index 1",
+        )
+
     def handle(self, *args, **options):
         namecode = options["namecode"]
-        topics_to_make = open(options["topics_file"], 'r').read()
-        ai_cards = open(options["cards_file"], 'r').read()
+        topics_to_make = open(options["topics_file"], "r").read()
+        ai_cards = open(options["cards_file"], "r").read()
         sg = SurveyGroup(
             name=namecode, topics_to_make=topics_to_make, ai_cards=ai_cards
         )
         sg.save()
         self.stdout.write(self.style.SUCCESS(f"Created SurveyGroup {namecode}"))
-        questions_start = input(
-            "please enter the questions for the initial assessment (json):"
-        )
-        correct_answers_start = input(
-            "please enter the correct answers for the initial assessment (json):"
-        )
-        questions_end = input(
-            "please enter the questions for the final assessment (json):"
-        )
-        correct_answers_end = input(
-            "please enter the correct answers for the final assessment (json):"
-        )
+        ass_start = json.loads(open(options["beginning_assessment_file"], "r").read())
+        ass_end = json.loads(open(options["final_assessment_file"], "r").read())
+        questions_start = json.dumps(ass_start[0])
+        correct_answers_start = json.dumps(ass_start[1])
+        questions_end = json.dumps(ass_end[0])
+        correct_answers_end = json.dumps(ass_end[1])
         ass = Assessment(
             survey_group=sg,
             questions_start=questions_start,

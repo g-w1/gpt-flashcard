@@ -35,10 +35,14 @@ def check_surveys_completed(view_func):
     def _wrapped_view(request, *args, **kwargs):
         if request.user.is_authenticated:
             if request.user.needs_to_take_survey:
-                group = "writing" if request.user.survey_group == 1 else "LLM"
+                group = (
+                    "writing"
+                    if request.user.experiment_group == EXPERIMENT_GROUP_WRITING
+                    else "LLM"
+                )
                 message = (
                     "write and study your own flashcards"
-                    if request.user.survey_group == 1
+                    if request.user.experiment_group == EXPERIMENT_GROUP_WRITING
                     else "study the flashcards written by a large language model (LLM)"
                 )
                 messages.info(
