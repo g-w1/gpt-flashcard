@@ -174,25 +174,59 @@ class User(AbstractBaseUser, PermissionsMixin):
                 subject = "Complete Your Final Check-In"
                 html_message = render_to_string("survey/do_final.html", {})
                 plain_message = strip_tags(html_message)
-                print(f"sending reminder for {self.email} ...")
-                mail.send_mail(
-                    subject, plain_message, from_email, to, html_message=html_message
+                print(
+                    f"sending reminder for {self.email} ...",
+                    mail.send_mail(
+                        subject,
+                        plain_message,
+                        from_email,
+                        to,
+                        html_message=html_message,
+                    ),
                 )
             else:
                 return
         else:
             num_cards_to_do_today = self.num_cards_to_do_today
             if num_cards_to_do_today == 0:
-                return
-            subject = "Review Your Flashcards Today"
-            html_message = render_to_string(
-                "survey/daily_reminder.html", {"num_cards": num_cards_to_do_today}
-            )
-            plain_message = strip_tags(html_message)
-            print(f"sending reminder for {self.email} ...")
-            mail.send_mail(
-                subject, plain_message, from_email, to, html_message=html_message
-            )
+                if (
+                    self.experiment_group == EXPERIMENT_GROUP_WRITING
+                    and self.num_cards_to_add_today != 0
+                ):
+                    subject = "Write Your Flashcards Today"
+                    html_message = render_to_string(
+                        "survey/daily_reminder_write.html",
+                        {"num_cards": self.num_cards_to_add_today},
+                    )
+                    plain_message = strip_tags(html_message)
+                    print(
+                        f"sending reminder for {self.email} ...",
+                        mail.send_mail(
+                            subject,
+                            plain_message,
+                            from_email,
+                            to,
+                            html_message=html_message,
+                        ),
+                    )
+                else:
+                    return
+            else:
+                subject = "Review Your Flashcards Today"
+                html_message = render_to_string(
+                    "survey/daily_reminder.html", {"num_cards": num_cards_to_do_today}
+                )
+                plain_message = strip_tags(html_message)
+                print(
+                    f"sending reminder for {self.email} ...",
+                    mail.send_mail(
+                        subject,
+                        plain_message,
+                        from_email,
+                        to,
+                        html_message=html_message,
+                    ),
+                )
 
     @staticmethod
     def send_daily_reminders():
