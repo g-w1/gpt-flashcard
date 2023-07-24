@@ -196,23 +196,26 @@ def get_cards(request):
             )
 
     else:
-        amount = len(later_today)
-        earliest = math.ceil(
-            (later_today[0].time_next_today - timezone.localtime()).total_seconds() / 60
-        )
-        return HttpResponse(
-            json.dumps(
-                {
-                    "id": None,
-                    "laterToday": {
-                        "amount": amount,
-                        "earliest_min": earliest,
-                    },
-                    "numToDoToday": num_cards_to_do_today,
-                }
-            ),
-            content_type="application/json",
-        )
+        underdue_card = get_card_from_cards(later_today, len(later_today))
+        return HttpResponse(underdue_card, content_type="application/json")
+        # this code is for a different Anki setting
+        # amount = len(later_today)
+        # earliest = math.ceil(
+        #     (later_today[0].time_next_today - timezone.localtime()).total_seconds() / 60
+        # )
+        # return HttpResponse(
+        #     json.dumps(
+        #         {
+        #             "id": None,
+        #             "laterToday": {
+        #                 "amount": amount,
+        #                 "earliest_min": earliest,
+        #             },
+        #             "numToDoToday": num_cards_to_do_today,
+        #         }
+        #     ),
+        #     content_type="application/json",
+        # )
 
 
 @login_required
