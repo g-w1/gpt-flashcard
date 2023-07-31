@@ -57,8 +57,13 @@ def get_facts_from_paragraph(paragraph):
 
 
 def get_cards_from_facts(facts, noinfo):
+    debug("get_cards_from_facts: noinfo:", noinfo)
+    if noinfo:
+        card = SYSTEM_CARD_NOINFO
+    else:
+        card = SYSTEM_CARD
     messages = [
-        {"role": "system", "content": SYSTEM_CARD_NOINFO if noinfo else SYSTEM_CARD},
+        {"role": "system", "content": card},
         {"role": "user", "content": facts},
     ]
     completion = openai.ChatCompletion.create(
@@ -76,11 +81,18 @@ def debug(*args, **kwargs):
     print("DEBUG ", *args, file=sys.stderr, **kwargs)
 
 
+# Sees if it is 'true'
+def b(boo):
+    return boo == "true" or boo == "True"
+
+
 if __name__ == "__main__":
     argv = sys.argv
-    if len(argv == 0):
+    if len(argv) == 1:
         debug("need either True or False for noinfo")
     else:
+        noinfo = b(argv[1])
+        debug("noinfo:", noinfo)
         INPUT_paragraphs = sys.stdin.readlines()
         cards = []
         PROCESSED_paragraphs = [
@@ -94,7 +106,7 @@ if __name__ == "__main__":
                 continue
             facts = get_facts_from_paragraph(paragraph)
             debug("facts:", facts)
-            cs = get_cards_from_facts(facts)
+            cs = get_cards_from_facts(facts, noinfo)
             debug("cards:", cs)
             cards.extend(cs)
 

@@ -1,0 +1,414 @@
+[
+  {
+    "question": "The Shang dynasty is the first Chinese dynasty attested from written records.",
+    "answer": "True"
+  },
+  {
+    "question": "The Shang dynasty existed from approximately 1600-1046 BC.",
+    "answer": "True"
+  },
+  {
+    "question": "Archaeological excavations near Anyang uncovered the remains of the Shang dynasty.",
+    "answer": "True"
+  },
+  {
+    "question": "The Shang dynasty civilization existed during the Bronze Age.",
+    "answer": "True"
+  },
+  {
+    "question": "Shang dynasty writings were found on oracle bones.",
+    "answer": "True"
+  },
+  {
+    "question": "Oracle bones were pieces of ox bone or turtle shell heated to produce cracks that supposedly foretold the future.",
+    "answer": "True"
+  },
+  {
+    "question": "Who overthrew the Zhou dynasty?",
+    "answer": "The Zhou 'Joe' dynasty"
+  },
+  {
+    "question": "How long did the Zhou dynasty rule for?",
+    "answer": "Nearly 800 years"
+  },
+  {
+    "question": "Who had real power during much of the Zhou dynasty?",
+    "answer": "Feudal lords"
+  },
+  {
+    "question": "What marked the beginning of the Eastern Zhou and the Spring and Autumn Period?",
+    "answer": "The sacking of the Zhou capital by barbarians in 771 BC"
+  },
+  {
+    "question": "How long did the Spring and Autumn Period last?",
+    "answer": "From 771 BC to 476 BC"
+  },
+  {
+    "question": "What schools of thought flourished during the Spring and Autumn Period?",
+    "answer": "The Hundred Schools of Thought, including Confucianism"
+  },
+  {
+    "question": "Who wrote the Art of War during the Spring and Autumn Period?",
+    "answer": "Sun Tzu"
+  },
+  {
+    "question": "What period followed the Zhou era?",
+    "answer": "The Warring States period"
+  },
+  {
+    "question": "How long did the Warring States period last?",
+    "answer": "From 476 BC to 221 BC"
+  },
+  {
+    "question": "Which state unified China during the Warring States period?",
+    "answer": "The state of Qin"
+  },
+  { "question": "The duration of the Qin dynasty", "answer": "221-206 BC" },
+  {
+    "question": "The Qin dynasty's impact on imperial China",
+    "answer": "Origin of many institutions"
+  },
+  {
+    "question": "The founding emperor of the Qin dynasty",
+    "answer": "Qin Shi Huangdi (also known as Qin Shi Huang)"
+  },
+  {
+    "question": "Qin Shi Huang's action towards Confucian texts",
+    "answer": "Destroyed many in his book burning"
+  },
+  {
+    "question": "Qin Shi Huang's contribution to standardization",
+    "answer": "Standardized weight measurements"
+  },
+  {
+    "question": "The unification achieved by Qin Shi Huang",
+    "answer": "Unified the Chinese script"
+  },
+  {
+    "question": "Qin Shi Huang's use of conscripts",
+    "answer": "Used them to build the Great Wall"
+  },
+  {
+    "question": "After Qin Shi Huang's death",
+    "answer": "Period of incompetent rule and revolts"
+  },
+  {
+    "question": "Contributing factor to the collapse of the Qin dynasty",
+    "answer": "Crown prince's suicide"
+  },
+  { "question": "Duration: Han dynasty", "answer": "206 BC - AD 220" },
+  {
+    "question": "Origin of the Han ethnic group",
+    "answer": "Influence of the Han dynasty"
+  },
+  { "question": "Founder of the Han dynasty", "answer": "Liu Bang" },
+  { "question": "Status at birth of Liu Bang", "answer": "Peasant" },
+  { "question": "Capital city of the Han Dynasty", "answer": "Chang'an" },
+  {
+    "question": "Cause of instability in the early years of the Han dynasty",
+    "answer": "Xiongnu nomadic tribe"
+  },
+  {
+    "question": "Emperor who solved the Xiongnu problem and expanded China's frontiers",
+    "answer": "Emperor Wudi"
+  },
+  {
+    "question": "Official state doctrine established by Emperor Wudi",
+    "answer": "Confucianism"
+  },
+  {
+    "question": "Fate of the land conquered by Emperor Wudi's successors",
+    "answer": "Unable to maintain it"
+  },
+  {
+    "question": "Family and leader who toppled the Han dynasty",
+    "answer": "Wang family and Wang Mang"
+  },
+  { "question": "Dynasty established by Wang Mang", "answer": "Xin Dynasty" },
+  {
+    "question": "Reason for Wang Mang's inability to maintain power",
+    "answer": "Changing course of the Yellow River"
+  },
+  {
+    "question": "Restorer of the Han dynasty and mover of the capital to Luoyang",
+    "answer": "Liu Xiu"
+  },
+  { "question": "Establisher of the Eastern Han dynasty", "answer": "Liu Xiu" },
+  {
+    "question": "Rebellions that hastened the end of the Han dynasty",
+    "answer": "Yellow Turbans and Five Pecks of Rice"
+  },
+  {
+    "question": "When did the Three Kingdoms period occur?",
+    "answer": "AD 184\u2013280"
+  },
+  {
+    "question": "What made a significant cultural impact during the Three Kingdoms period?",
+    "answer": "Romance of the Three Kingdoms"
+  },
+  {
+    "question": "What were the three kingdoms that formed during the Three Kingdoms period?",
+    "answer": "Cao Wei, Eastern Wu, and Shu Han"
+  },
+  {
+    "question": "When was the Battle of Red Cliffs fought?",
+    "answer": "AD 208"
+  },
+  {
+    "question": "Which kingdom emerged victorious under the leadership of the Sima family?",
+    "answer": "Cao Wei"
+  },
+  {
+    "question": "How long did China's reunification during the Three Kingdoms period last?",
+    "answer": "Short-lived"
+  },
+  {
+    "question": "What period followed the Three Kingdoms period?",
+    "answer": "Southern and Northern Dynasties"
+  },
+  {
+    "question": "The Tang dynasty is considered another golden age of Chinese culture.",
+    "answer": "true"
+  },
+  {
+    "question": "Important poets during the Tang period include Li Bai and Du Fu.",
+    "answer": "true"
+  },
+  {
+    "question": "The printing press was invented during the Tang dynasty.",
+    "answer": "true"
+  },
+  {
+    "question": "The Tang dynasty reunited China after the collapse of the Sui dynasty.",
+    "answer": "true"
+  },
+  {
+    "question": "The Tang dynasty was ruled by the Li family.",
+    "answer": "true"
+  },
+  {
+    "question": "The capital of the Tang dynasty was Chang'an, which is now modern-day Xi'an.",
+    "answer": "true"
+  },
+  {
+    "question": "The first ruler of the Tang dynasty used the title of Emperor Gaozu.",
+    "answer": "true"
+  },
+  {
+    "question": "Emperor Gaozu was forced to abdicate by his second son, Li Shimin.",
+    "answer": "true"
+  },
+  {
+    "question": "Li Shimin killed two of his brothers in an ambush.",
+    "answer": "true"
+  },
+  {
+    "question": "Emperor Taizong (Li Shimin) is considered one of the greatest rulers in Chinese history.",
+    "answer": "true"
+  },
+  {
+    "question": "Emperor Taizong subjugated much of western China and parts of central Asia.",
+    "answer": "true"
+  },
+  {
+    "question": "Power was concentrated in the hands of Empress Wu after the death of Emperor Taizong.",
+    "answer": "true"
+  },
+  {
+    "question": "Empress Wu was the only woman to become emperor of China.",
+    "answer": "true"
+  },
+  {
+    "question": "Empress Wu called her rule the \"Second Zhou dynasty.\"",
+    "answer": "true"
+  },
+  {
+    "question": "Empress Wu was a supporter of Buddhism and promoted the imperial examination system.",
+    "answer": "true"
+  },
+  {
+    "question": "The An Lushan rebellion wrecked the foundations of the Tang dynasty during the reign of Emperor Xuanzong.",
+    "answer": "true"
+  },
+  {
+    "question": "The An Lushan rebellion concentrated power in the hands of regional military overlords.",
+    "answer": "true"
+  },
+  {
+    "question": "The Tang dynasty ended in 907, marking the beginning of the Five Dynasties and Ten Kingdoms period.",
+    "answer": "true"
+  },
+  { "question": "Dates: The Song dynasty", "answer": "960-1279" },
+  {
+    "question": "Prioritization: The Song dynasty",
+    "answer": "Cultural activities over warfare"
+  },
+  {
+    "question": "State Doctrine: The Song dynasty",
+    "answer": "Neo-Confucianism"
+  },
+  {
+    "question": "Talent Recruitment: The Song dynasty",
+    "answer": "Imperial examination"
+  },
+  {
+    "question": "Discoveries: The Song dynasty",
+    "answer": "Gunpowder and the compass"
+  },
+  {
+    "question": "Control of China: The Song dynasty",
+    "answer": "Could not control all of China and gave up parts of northern China to the Liao dynasty"
+  },
+  {
+    "question": "Characterization: The Liao dynasty",
+    "answer": "Considered 'barbarian'"
+  },
+  {
+    "question": "Shift of Power: The Song dynasty",
+    "answer": "Begun with a military leader but shifted power to the scholarly elite"
+  },
+  {
+    "question": "Establishment: The Southern Song dynasty",
+    "answer": "Established after the Northern Song dynasty was overrun by the Jin dynasty"
+  },
+  { "question": "Capital: The Southern Song dynasty", "answer": "Hangzhou" },
+  {
+    "question": "Alliance and Defeat: The Song dynasty",
+    "answer": "Assisted the Mongols in defeating the Jin dynasty, but then became the target of the Mongols themselves"
+  },
+  {
+    "question": "Resistance and Defeat: The Song dynasty",
+    "answer": "Resisted Mongol offensives for almost 40 years before being defeated"
+  },
+  { "question": "Who established the Yuan dynasty?", "answer": "Mongols" },
+  { "question": "When did the Yuan dynasty exist?", "answer": "1271 to 1368" },
+  {
+    "question": "What did the Mongols destroy to establish the Yuan dynasty?",
+    "answer": "Jin and Song states"
+  },
+  {
+    "question": "Who was a notable ruler of the Yuan dynasty?",
+    "answer": "Kublai Khan"
+  },
+  {
+    "question": "What thwarted Kublai Khan's invasions of Japan?",
+    "answer": "Typhoons (called kamikaze)"
+  },
+  {
+    "question": "Did the Yuan rulers receive major or minimal support from Chinese elites?",
+    "answer": "Minimal"
+  },
+  {
+    "question": "What rebellion marked the beginning of the end for the Yuan dynasty?",
+    "answer": "Red Turban rebellion in the 1350s"
+  },
+  {
+    "question": "The Ming dynasty was the last native dynasty of China.",
+    "answer": "True"
+  },
+  { "question": "The Ming dynasty ruled from 1368-1644.", "answer": "True" },
+  {
+    "question": "The rulers of the Ming dynasty came from the Zhu family.",
+    "answer": "True"
+  },
+  {
+    "question": "The use of the word \"china\" to describe fine porcelain originated from the Ming dynasty.",
+    "answer": "True"
+  },
+  {
+    "question": "The Ming dynasty was known for producing high-quality porcelain.",
+    "answer": "True"
+  },
+  {
+    "question": "The founder of the Ming dynasty was Zhu Yuanzhang (Emperor Hongwu).",
+    "answer": "True"
+  },
+  {
+    "question": "Zhu Yuanzhang was a peasant leader who expelled the Mongol Yuan rulers from China.",
+    "answer": "True"
+  },
+  {
+    "question": "Zhu Yuanzhang was succeeded by his grandson.",
+    "answer": "True"
+  },
+  {
+    "question": "Zhu Di (Emperor Yongle) quickly took power from his grandson.",
+    "answer": "True"
+  },
+  {
+    "question": "During the reign of Zhu Di, the eunuch Zheng He led treasure fleets on seven voyages.",
+    "answer": "True"
+  },
+  { "question": "Zhu Di moved China's capital to Beijing.", "answer": "True" },
+  {
+    "question": "After Zhu Di's death, the Ming dynasty banned maritime commerce.",
+    "answer": "True"
+  },
+  {
+    "question": "The banning of maritime commerce made the Ming dynasty vulnerable to pirates.",
+    "answer": "True"
+  },
+  {
+    "question": "The Ming dynasty ended after the rebellion of Li Zicheng.",
+    "answer": "True"
+  },
+  {
+    "question": "The rebellion of Li Zicheng was caused by inadequate government response to inflation, famine, and floods.",
+    "answer": "True"
+  },
+  {
+    "question": "The Manchu people marched on the Great Wall and suppressed Li Zicheng's revolt.",
+    "answer": "True"
+  },
+  { "question": "The Manchus took power in Beijing.", "answer": "True" },
+  { "question": "Who established the Qing dynasty?", "answer": "The Manchus" },
+  { "question": "When did the Qing dynasty rule?", "answer": "1644-1911" },
+  {
+    "question": "Which dynasty was the last to rule imperial China?",
+    "answer": "Qing dynasty"
+  },
+  {
+    "question": "What was the banner system?",
+    "answer": "An important institution of the Qing dynasty"
+  },
+  {
+    "question": "What did the banner system provide for Manchus?",
+    "answer": "Welfare benefits and advantages in the imperial examination"
+  },
+  {
+    "question": "Who established the foundations of the Qing dynasty?",
+    "answer": "Kangxi Emperor"
+  },
+  {
+    "question": "What did the Kangxi Emperor do?",
+    "answer": "Put down the Revolt of the Three Feudatories"
+  },
+  {
+    "question": "What is the Kangxi Emperor famous for?",
+    "answer": "The Kangxi dictionary, which popularized Chinese radicals"
+  },
+  {
+    "question": "What challenges did China face during the last century of Qing rule?",
+    "answer": "Foreign attacks like the Opium Wars and internal dissent like the Taiping Rebellion"
+  },
+  {
+    "question": "Did attempts to modernize Qing rule successfully?",
+    "answer": "No, they were inconclusive"
+  },
+  {
+    "question": "Who opposed the reformers in Qing rule and was involved in the Boxer Rebellion?",
+    "answer": "Empress Dowager Cixi"
+  },
+  {
+    "question": "What happened as a result of the Boxer Rebellion?",
+    "answer": "Foreign troops were sent to Beijing"
+  },
+  {
+    "question": "Who became the last emperor of China in 1906?",
+    "answer": "Puyi"
+  },
+  {
+    "question": "What event ended the Qing Dynasty and established the Republic of China?",
+    "answer": "The Xinhai Revolution in 1911"
+  }
+]
