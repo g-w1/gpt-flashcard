@@ -90,6 +90,7 @@ class UserManager(BaseUserManager):
 
 EXPERIMENT_GROUP_WRITING = 1
 EXPERIMENT_GROUP_AI = 2
+EXPERIMENT_GROUP_AINAIVE = 3
 
 
 class User(AbstractBaseUser, PermissionsMixin):
@@ -193,6 +194,7 @@ class User(AbstractBaseUser, PermissionsMixin):
                     self.experiment_group == EXPERIMENT_GROUP_WRITING
                     and self.num_cards_to_add_today != 0
                 ):
+                    return  # we depreciated writing
                     subject = "Write Your Flashcards Today"
                     html_message = render_to_string(
                         "survey/daily_reminder_write.html",

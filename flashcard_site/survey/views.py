@@ -27,6 +27,7 @@ from .models import (
     NEW_ADDED_EVERY_DAY,
     EXPERIMENT_GROUP_WRITING,
     EXPERIMENT_GROUP_AI,
+    EXPERIMENT_GROUP_AINAIVE,
 )
 
 
@@ -417,32 +418,40 @@ def initial_survey_view(request):
     return render(request, "survey/initial_survey.html", {"form": form})
 
 
-def get_disto_experiment_groups_in_survey_group(survey_group):
+def get_distro_experiment_groups_in_survey_group(survey_group):
     users = User.objects.filter(survey_group=survey_group)
     writing = 0
     ai = 0
+    ainaive = 0
     for user in users:
         if user.experiment_group == EXPERIMENT_GROUP_WRITING:
             writing += 1
         elif user.experiment_group == EXPERIMENT_GROUP_AI:
             ai += 1
+        elif user.experiment_group == EXPERIMENT_GROUP_AINAIVE:
+            ainaive += 1
         else:
             assert False  # the experiment group should be one of the three
-    return [writing, ai]
+    return [writing, ai, ainaive]
 
 
 def get_experiment_group_for_next_user(survey_group):
-    distros = get_disto_experiment_groups_in_survey_group(survey_group)
+    distros = get_distro_experiment_groups_in_survey_group(survey_group)
+    # we discard distro[0] since we have depricated writing
+
     # Check if all groups have the same distribution
-    if distros[0] == distros[1]:
+    if distros[1] == distros[2]:
         # if yes, return a random group
-        return random.choice([EXPERIMENT_GROUP_WRITING, EXPERIMENT_GROUP_AI])
+        return random.choice([EXPERIMENT_GROUP_AINAIVE, EXPERIMENT_GROUP_AI])
     else:
         # if no, return the group with the least distribution
-        if distros[0] == min(distros):
-            return EXPERIMENT_GROUP_WRITING
-        else:
+        distros[
+            0
+        ] = 10000000  # just do something really big so writing does not get included
+        if distros[1] == min(distros):
             return EXPERIMENT_GROUP_AI
+        else:
+            return EXPERIMENT_GROUP_AINAIVE
 
 
 ### USER STUFF
@@ -455,7 +464,8 @@ def register(request):
                 user.survey_group
             )
             user.time_for_writing = (
-                None if user.experiment_group != EXPERIMENT_GROUP_WRITING else 0
+                # None if user.experiment_group != EXPERIMENT_GROUP_WRITING else 0
+                0
             )
             user.date_final_opens = timezone.localdate() + datetime.timedelta(
                 7 * 4
@@ -464,8 +474,8 @@ def register(request):
             email = form.cleaned_data["email"]
             raw_password = form.cleaned_data["password1"]
             user = authenticate(email=email, password=raw_password)
-            if user.experiment_group == EXPERIMENT_GROUP_AI:
-                user.add_ai_cards_from_survey_group()
+            # if user.experiment_group == EXPERIMENT_GROUP_AI:
+            user.add_ai_cards_from_survey_group()
             login(request, user)
             user.send_registration_email()  # TODO maybe queue this for less latency? or just spawn it in a thread
             return redirect("index")
