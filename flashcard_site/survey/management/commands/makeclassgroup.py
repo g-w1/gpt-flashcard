@@ -16,6 +16,11 @@ class Command(BaseCommand):
         parser.add_argument(
             "cards_file", help="file containing the JSON of the cards", type=str
         )
+        parser.add_argument(
+            "naive_cards_file",
+            help="file containing the JSON of the naive cards",
+            type=str,
+        )
 
         parser.add_argument(
             "beginning_assessment_file",
@@ -30,8 +35,12 @@ class Command(BaseCommand):
         namecode = options["namecode"]
         topics_to_make = open(options["topics_file"], "r").read()
         ai_cards = open(options["cards_file"], "r").read()
+        ai_naive_cards = open(options["naive_cards_file"], "r").read()
         sg = SurveyGroup(
-            name=namecode, topics_to_make=topics_to_make, ai_cards=ai_cards
+            name=namecode,
+            topics_to_make=topics_to_make,
+            ai_cards=ai_cards,
+            ai_naive_cards=ai_naive_cards,
         )
         sg.save()
         self.stdout.write(self.style.SUCCESS(f"Created SurveyGroup {namecode}"))

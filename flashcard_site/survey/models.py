@@ -28,6 +28,7 @@ class SurveyGroup(models.Model):
     cards_per_week = models.PositiveIntegerField(default=45)
     topics_to_make = models.TextField()  # json array of 5 arrays of strings
     ai_cards = models.TextField()  # json of [{'question': Q, 'answer': A}]
+    ai_naive_cards = models.TextField()  # json of [{'question': Q, 'answer': A}]
 
     def get_topic_to_make(self, days_passed):
         topics_parsed = json.loads(self.topics_to_make)
@@ -43,9 +44,11 @@ class SurveyGroup(models.Model):
         try:
             ttm = json.loads(self.topics_to_make)
             aic = json.loads(self.ai_cards)
+            ainc = json.loads(self.ai_naive_cards)
             assert type(ttm) == list
             assert len(ttm) == 5
             assert type(aic) == list
+            assert type(ainc) == list
         except:
             raise ValidationError(
                 "SurveyGroup topics_to_make or ai_cards was not valid JSON"
@@ -248,7 +251,10 @@ class User(AbstractBaseUser, PermissionsMixin):
         )
 
     def add_ai_cards_from_survey_group(self):
-        cards = json.loads(self.survey_group.ai_cards)
+        if self.experiment_group == EXPERIMENT_GROUP_AI:
+            cards = json.loads(self.survey_group.ai_cards)
+        elif self.experiment_group == EXPERIMENT_GROUP_AINAIVE:
+            cards = json.loads(self.survey_group.ai_naive_cards)
         for card in cards:
             q = card["question"]
             a = card["answer"]
