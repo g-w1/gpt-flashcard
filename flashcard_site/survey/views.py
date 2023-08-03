@@ -96,7 +96,7 @@ def review_cards(request):
 
 def get_card_from_cards(cards, num_cards_to_do_today):
     if len(cards) > 0:
-        review = cards[0]
+        review = random.choice(list(cards))
         id = review.id
         front = review.front
         back = review.back
