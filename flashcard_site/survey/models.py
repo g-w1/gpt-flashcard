@@ -130,7 +130,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     def needs_to_take_final_assessment(self):
         doesnt_exist = not AssessmentSubmission.objects.filter(
             user_belongs=self,
-            at_beginning=True,
+            at_beginning=False,
         ).exists()
         return self.final_assessment_is_due() and doesnt_exist
 
